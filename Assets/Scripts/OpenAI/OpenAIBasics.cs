@@ -19,7 +19,6 @@ using System.IO;
 public class OpenAIBasics //: MonoBehaviour
 {
     // Start is called before the first frame update
-    string OPENAI_KEY = "sk-proj-rHpDEaMzrAfe0a2njrWaT3BlbkFJS9NFCLdBSn75DFMuObXx";
     string GPT4_TURBO_MODEL = "gpt-4-turbo";
     string GPT4_O_MODEL = "gpt-4o";
     string GPT35_TURBO_MODEL = "gpt-3.5-turbo";
