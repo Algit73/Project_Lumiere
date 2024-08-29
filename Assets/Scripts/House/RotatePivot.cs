@@ -5,6 +5,7 @@ public class RotatePivot : Interactive
 {
     [SerializeField] private Transform doorTr;
     [SerializeField] private Vector3 targetRot1, targetRot2;
+    bool change_state;
 
     private IEnumerator _rotating;
 
@@ -13,6 +14,20 @@ public class RotatePivot : Interactive
         base.Start();
 
         _rotating = RotateDoor(targetRot2);
+    }
+
+    public override void Action()
+    {
+        if (change_state == false)
+        {
+            OpenDoor();
+            change_state = true;
+        }
+        else
+        {
+            CloseDoor();
+            change_state = false;
+        }
     }
 
     private void OpenDoor()

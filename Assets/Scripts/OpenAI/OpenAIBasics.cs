@@ -63,7 +63,7 @@ public class OpenAIBasics //: MonoBehaviour
 
     async void open_ai_get_models()
     {
-        var api = new OpenAIClient(OPENAI_KEY);
+        // var api = new OpenAIClient(OPENAI_KEY);
         var models = await api.ModelsEndpoint.GetModelsAsync();
 
         foreach (var model in models)

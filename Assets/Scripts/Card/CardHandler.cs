@@ -127,6 +127,16 @@ public class CardHandler : MonoBehaviour
                 break;
         }
 
+        
+        var rotation = 0; /// to rotate the object to face the camera
+
+        /// Assigning the meta data
+        var interactive = obj.GetComponents<Interactive>();
+        var meta = interactive[0].Meta;
+
+        // check if interactive[0] is not null
+        // if (interactive.Length == 0) return;
+
         Interactive clone = Instantiate(obj, parent);
         clone.name = obj.name + $"_Card{imageNum}";
         clone.transform.localPosition = clone.ObjectPosAgainstCamera;
@@ -139,6 +149,10 @@ public class CardHandler : MonoBehaviour
             else ChangeLayer(t, layer);
         }
 
+        /// meta is a dictionary, we check if it has a key called "rotation"
+        if (meta.ContainsKey("rotate_in_card")) rotation = int.Parse(meta["rotate_in_card"]);
+
+        clone.transform.RotateAround(clone.transform.position, Vector3.up, rotation);
         _objectsInCard[imageNum] = clone.transform;
     }
 
