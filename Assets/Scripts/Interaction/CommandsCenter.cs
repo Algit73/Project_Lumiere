@@ -44,7 +44,8 @@ public class CommandsCenter : MonoBehaviour
         }
     }
 
-    public void AddInteractives(Interactive interactive) => _interactivesDic.Add(interactive.name, interactive);
+    // AddInteractives changed to involve cases that are multi part
+    public void AddInteractives(Interactive interactive) => _interactivesDic.TryAdd(interactive.name, interactive);//_interactivesDic.Add(interactive.name, interactive);
     public void RemoveInteractives(string name) => _interactivesDic.Remove(name);
     public void Set_instruction(string data)
     {

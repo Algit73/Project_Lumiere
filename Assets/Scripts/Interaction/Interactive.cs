@@ -9,9 +9,23 @@ public abstract class Interactive : MonoBehaviour, IClickable
     [SerializeField] private Vector3 iconPos;
     [SerializeField] private bool autoCameraOffset;
     [SerializeField] private Vector3 objectPosAgainstCamera;
-    [SerializeField] private KeyAndValue[] data;
+    [SerializeField] private KeyAndValue[] data = new KeyAndValue[]
+    {
+        new KeyAndValue { Key = "type", Value = "" },
+        new KeyAndValue { Key = "color",Value = "" },
+        new KeyAndValue { Key ="x_rotation", Value ="0" },
+        new KeyAndValue { Key ="y_rotation", Value ="0" },
+        new KeyAndValue { Key ="z_rotation", Value ="0" },
+        new KeyAndValue { Key ="scale_change_x", Value ="0" },
+        new KeyAndValue { Key ="scale_change_y", Value ="0" },
+        new KeyAndValue { Key ="scale_change_z", Value ="0" },
+        new KeyAndValue { Key ="position_change_x", Value ="0" },
+        new KeyAndValue { Key ="position_change_y", Value ="0" },
+        new KeyAndValue { Key ="position_change_z", Value ="0" }
+    };
+    
 
-    private Collider _col;
+    [SerializeField] private Collider _col;
     private Transform _iconTr;
     private Vector3 _initialPos;
     private Vector3 _initialRot;
@@ -46,10 +60,14 @@ public abstract class Interactive : MonoBehaviour, IClickable
 
         Meta = new Dictionary<string, string>();
 
+
+
         foreach (KeyAndValue item in data)
             Meta.Add(item.Key, item.Value);
 
-        _col = GetComponent<Collider>();
+        // Get the collider component of the object
+        if (_col == null)
+            _col = GetComponent<Collider>();
 
         if (autoIconPos) SetIconPos();
         if (autoCameraOffset) SetCameraOffset();
@@ -157,12 +175,15 @@ public abstract class Interactive : MonoBehaviour, IClickable
     // this method is for IClickable that will use to understand what should happen when we click on this object
     public void OnClick()
     {
-        if (!CardHandler.CardIsOpen) Action();
+        if (!CardHandler.CardIsOpen || Prohibited_Objects.names.Contains(name)) Action();
         else
         {
             InteractionData data = new InteractionData();
-            data.DataStringValue = name;
 
+            // check if the name is not in the list named prohibited_objs and if it was, return nothing
+            // if (Prohibited_Objects.names.Contains(name)) return;
+            data.DataStringValue = name;
+            // write a code that if the name was in a list, the next line will be neglected
             CommandsCenter.Manager.AddObjectToCard(data);
         }
     }

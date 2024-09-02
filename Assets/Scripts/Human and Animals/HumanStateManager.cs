@@ -87,7 +87,7 @@ public class HumanStateManager : Interactive
     }
     private IEnumerator IdleState()
     {
-        animator.Play("Idle", 0, 0.5f);
+        animator.Play ("Idle", 0, 0.5f);
         yield return _delay;
 
         _currentState = ChangeState();

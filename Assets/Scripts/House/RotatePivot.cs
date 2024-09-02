@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 public class RotatePivot : Interactive
@@ -12,7 +13,6 @@ public class RotatePivot : Interactive
     public override void Start()
     {
         base.Start();
-
         _rotating = RotateDoor(targetRot2);
     }
 
