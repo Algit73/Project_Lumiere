@@ -861,7 +861,6 @@ GameObject:
   - component: {fileID: 8027492381318229798}
   - component: {fileID: 8679757490863890365}
   - component: {fileID: 772569662}
-  - component: {fileID: 772569661}
   m_Layer: 0
   m_Name: Human1
   m_TagString: Untagged
@@ -1036,33 +1035,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &772569661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5436741564957258347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 807387cab504cad4c9ed410d09615f93, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoIconPos: 0
-  iconPos: {x: 0, y: 2, z: 0}
-  autoCameraOffset: 0
-  objectPosAgainstCamera: {x: 0, y: 0, z: 0}
-  data: []
-  animator: {fileID: 8679757490863890365}
-  audioSource: {fileID: 0}
-  points: {fileID: 0}
-  obstacleLayers:
-    serializedVersion: 2
-    m_Bits: 32896
-  walkSpeed: 0.5
-  walkChance: 30
-  jumpChance: 30
-  talkChance: 30
 --- !u!1 &5627010594929708217
 GameObject:
   m_ObjectHideFlags: 0

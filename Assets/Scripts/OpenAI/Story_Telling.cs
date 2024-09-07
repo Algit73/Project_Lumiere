@@ -120,8 +120,16 @@ public class Story_Telling : MonoBehaviour
         string names = "";
         foreach (var item in items)
         {
-            string[] parts = item.ToString().Split('_');
-            names += parts[0] + ", ";
+            var interactive = item.GetComponents<Interactive>();
+            var data = interactive[0].data;
+            /// TODO: this part should be reconsidered
+            var meta = new Dictionary<string, string>();
+            foreach (Interactive.KeyAndValue d in data)
+                meta.Add(d.Key, d.Value);
+            // string[] parts = item.ToString().Split('_');
+            // string[] parts = item.ToString().Split('_');
+            names += meta["description"] + ", ";
+            // names += parts[0] + ", ";
         }
         return names;
     }

@@ -9,9 +9,11 @@ public abstract class Interactive : MonoBehaviour, IClickable
     [SerializeField] private Vector3 iconPos;
     [SerializeField] private bool autoCameraOffset;
     [SerializeField] private Vector3 objectPosAgainstCamera;
-    [SerializeField] private KeyAndValue[] data = new KeyAndValue[]
+    [SerializeField] public KeyAndValue[] data = new KeyAndValue[]
     {
         new KeyAndValue { Key = "type", Value = "" },
+        new KeyAndValue { Key = "description", Value = "" },
+        new KeyAndValue { Key = "name", Value = "" },
         new KeyAndValue { Key = "color",Value = "" },
         new KeyAndValue { Key ="x_rotation", Value ="0" },
         new KeyAndValue { Key ="y_rotation", Value ="0" },
@@ -36,12 +38,13 @@ public abstract class Interactive : MonoBehaviour, IClickable
     protected Vector3 DataFloatValues;
     protected string DataStringValue;
     protected bool IsWorking;
+    protected GlowEffect glowEffect;
 
     public Dictionary<string, string> Meta { private set; get; }
     public Vector3 ObjectPosAgainstCamera => objectPosAgainstCamera;
 
     [System.Serializable]
-    private struct KeyAndValue 
+    public struct KeyAndValue 
     { 
         public string Key;
         public string Value;
@@ -76,8 +79,8 @@ public abstract class Interactive : MonoBehaviour, IClickable
         gameObject.layer = LayerMask.NameToLayer("Clickable");
 
         // Instantiate the icon prefab for this interactive object
-        _iconTr = Instantiate(UIManager.Manager.IconPrefab, transform).transform;
-        _iconTr.gameObject.SetActive(true);
+        // _iconTr = Instantiate(UIManager.Manager.IconPrefab, transform).transform;
+        // _iconTr.gameObject.SetActive(true);
         _wait = new WaitWhile(() => IsWorking);
     }
 
@@ -90,6 +93,14 @@ public abstract class Interactive : MonoBehaviour, IClickable
         _initialPos = transform.position;
         _initialRot = transform.eulerAngles;
         _initialScale = transform.localScale;
+
+        /// Check if the GlowEffect component is attached to this object
+        glowEffect = GetComponent<GlowEffect>();
+        
+        if (glowEffect == null)
+        {
+            Debug.LogWarning("No GlowEffect component found on this object.");
+        }
     }
 
     private void Update()
@@ -98,8 +109,8 @@ public abstract class Interactive : MonoBehaviour, IClickable
         if (_isForCard) return;
 
         // Update the position and rotation of the icon related to this object
-        _iconTr.localPosition = iconPos;
-        _iconTr.LookAt(Camera.main.transform);
+        // _iconTr.localPosition = iconPos;
+        // _iconTr.LookAt(Camera.main.transform);
     }
 
     private void SetIconPos()

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -127,19 +128,23 @@ public class CardHandler : MonoBehaviour
                 break;
         }
 
-        
+
+
+        var x_rotation = 0; /// to rotate the object to face the camera
         var y_rotation = 0; /// to rotate the object to face the camera
+        var z_rotation = 0; /// to rotate the object to face the camera
+
         var scale_change_x = 0f;
         var scale_change_y = 0f;
         var scale_change_z = 0f;
-        
+
+
         var position_change_x = 0f;
         var position_change_y = 0f;
         var position_change_z = 0f;
 
         /// Assigning the meta data
-        var interactive = obj.GetComponents<Interactive>();
-        var meta = interactive[0].Meta;
+        Dictionary<string, string> meta = meta_data_extractor(obj);
 
         // check if interactive[0] is not null
         // if (interactive.Length == 0) return;
@@ -157,17 +162,33 @@ public class CardHandler : MonoBehaviour
         }
 
         /// meta is a dictionary, we check if it has a key called "rotation"
+        if (meta.ContainsKey("x_rotation")) x_rotation = int.Parse(meta["x_rotation"]);
         if (meta.ContainsKey("y_rotation")) y_rotation = int.Parse(meta["y_rotation"]);
+        if (meta.ContainsKey("z_rotation")) z_rotation = int.Parse(meta["z_rotation"]);
+
         if (meta.ContainsKey("scale_change_x")) scale_change_x = float.Parse(meta["scale_change_x"]);
         if (meta.ContainsKey("scale_change_y")) scale_change_y = float.Parse(meta["scale_change_y"]);
         if (meta.ContainsKey("scale_change_z")) scale_change_z = float.Parse(meta["scale_change_z"]);
+
         if (meta.ContainsKey("position_change_x")) position_change_x = float.Parse(meta["position_change_x"]);
         if (meta.ContainsKey("position_change_y")) position_change_y = float.Parse(meta["position_change_y"]);
         if (meta.ContainsKey("position_change_z")) position_change_z = float.Parse(meta["position_change_z"]);
-        
 
 
-        clone.transform.RotateAround(clone.transform.position, Vector3.up, y_rotation);
+
+
+        // clone.transform.RotateAround(clone.transform.position, Vector3.up, y_rotation);
+        // Assuming 'clone' is your GameObject
+        Vector3 rotationAngles = new Vector3(x_rotation, y_rotation, z_rotation);
+        clone.transform.Rotate(rotationAngles, Space.Self);
+
+        // Assuming 'clone' is your GameObject
+        // RotateObject(out clone, x_rotation, y_rotation, z_rotation);
+        // Assuming 'clone' is your GameObject
+        RotateClone(clone.transform, x_rotation, y_rotation, z_rotation);
+
+
+
 
         // Scaling
         Vector3 newScale = new Vector3(
@@ -183,6 +204,23 @@ public class CardHandler : MonoBehaviour
 
         _objectsInCard[imageNum] = clone.transform;
     }
+
+    private static Dictionary<string, string> meta_data_extractor(Interactive obj)
+    {
+        var interactive = obj.GetComponents<Interactive>();
+        var meta = interactive[0].Meta;
+        return meta;
+    }
+
+    private void RotateClone(Transform cloneTransform, float xRotation, float yRotation, float zRotation)
+    {
+        Vector3 rotationAngles = new Vector3(xRotation, yRotation, zRotation);
+        cloneTransform.Rotate(rotationAngles, Space.Self);
+    }
+
+
+
+
 
     public static Transform[] ObjectsInCard { get => _objectsInCard; }
     public IEnumerator ResetImage(int imageNum)
