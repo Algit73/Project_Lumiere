@@ -9,6 +9,7 @@ public abstract class Interactive : MonoBehaviour, IClickable
     [SerializeField] private Vector3 iconPos;
     [SerializeField] private bool autoCameraOffset;
     [SerializeField] private Vector3 objectPosAgainstCamera;
+    [SerializeField] private bool masked = false;   /// Masking the object from being selected
     [SerializeField] public KeyAndValue[] data = new KeyAndValue[]
     {
         new KeyAndValue { Key = "type", Value = "" },
@@ -186,17 +187,15 @@ public abstract class Interactive : MonoBehaviour, IClickable
     // this method is for IClickable that will use to understand what should happen when we click on this object
     public void OnClick()
     {
-        if (!CardHandler.CardIsOpen || Prohibited_Objects.names.Contains(name)) Action();
-        else
-        {
-            InteractionData data = new InteractionData();
+        // if (!CardHandler.CardIsOpen || Prohibited_Objects.names.Contains(name)) Action();
+        InteractionData data = new InteractionData();
 
-            // check if the name is not in the list named prohibited_objs and if it was, return nothing
-            // if (Prohibited_Objects.names.Contains(name)) return;
-            data.DataStringValue = name;
-            // write a code that if the name was in a list, the next line will be neglected
-            CommandsCenter.Manager.AddObjectToCard(data);
-        }
+        // check if the name is not in the list named prohibited_objs and if it was, return nothing
+        // if (Prohibited_Objects.names.Contains(name)) return;
+        data.DataStringValue = name;
+        // write a code that if the name was in a list, the next line will be neglected
+        if (!masked) CommandsCenter.Manager.AddObjectToCard(data);
+        else Action();
     }
     public string GetMeta(string key)
     {

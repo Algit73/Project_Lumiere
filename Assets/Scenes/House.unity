@@ -734,6 +734,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -845,6 +846,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -1961,7 +1963,7 @@ GameObject:
   - component: {fileID: 122862565}
   - component: {fileID: 122862564}
   m_Layer: 5
-  m_Name: Selected_Objects
+  m_Name: HUD_Selected_Objects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3052,6 +3054,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 6, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: -2, z: 10}
+  masked: 0
   data: []
   _col: {fileID: 0}
   object1: {fileID: 1595109613}
@@ -3979,6 +3982,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 11, z: 1.3}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: -5, z: 15}
+  masked: 0
   data: []
   _col: {fileID: 0}
   doorTr: {fileID: 2647898423244166710}
@@ -4198,6 +4202,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -4398,6 +4403,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -4868,6 +4874,7 @@ Transform:
   - {fileID: 1364645495}
   - {fileID: 589985616}
   - {fileID: 1399883330}
+  - {fileID: 738117692}
   - {fileID: 805016944}
   - {fileID: 1410579970}
   - {fileID: 288736471}
@@ -10145,6 +10152,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 1.79, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -10370,6 +10378,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -10597,6 +10606,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -15942,28 +15952,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 433933146}
   m_Mesh: {fileID: 7203688626665590847, guid: 63d064562bbd81a43a6626da79e5b136, type: 3}
---- !u!1 &446726382 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2592644785667991219, guid: 6c7f06c6a702d4d41bba4b5576adc82c, type: 3}
-  m_PrefabInstance: {fileID: 1399883329}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &446726385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 446726382}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: b4c587bdd05a90640b39decf08941a64, type: 2}
-  isGlobal: 1
-  blendDistance: 0
-  weight: 1
-  priority: 0
 --- !u!1001 &453029649
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16328,6 +16316,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data: []
   _col: {fileID: 0}
   doorTr: {fileID: 814530432}
@@ -16735,6 +16724,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -22828,6 +22818,85 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 619911226}
   m_CullTransparentMesh: 1
+--- !u!1 &623173869 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4888388292202968741, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+  m_PrefabInstance: {fileID: 1963457354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &623173870 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -5392107599213305128, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+  m_PrefabInstance: {fileID: 1963457354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &623173874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623173869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a01c86bc3a4def448e69a89c03e26db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoIconPos: 0
+  iconPos: {x: 0, y: 0, z: 0}
+  autoCameraOffset: 0
+  objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 1
+  data:
+  - Key: type
+    Value: 
+  - Key: description
+    Value: 
+  - Key: name
+    Value: 
+  - Key: color
+    Value: 
+  - Key: x_rotation
+    Value: 0
+  - Key: y_rotation
+    Value: 0
+  - Key: z_rotation
+    Value: 0
+  - Key: scale_change_x
+    Value: 0
+  - Key: scale_change_y
+    Value: 0
+  - Key: scale_change_z
+    Value: 0
+  - Key: position_change_x
+    Value: 0
+  - Key: position_change_y
+    Value: 0
+  - Key: position_change_z
+    Value: 0
+  _col: {fileID: 0}
+  doorTr: {fileID: 623173870}
+  targetRot1: {x: -90, y: 0, z: 0}
+  targetRot2: {x: -90, y: 120, z: 0}
+--- !u!65 &623173875
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623173869}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.6000006, y: 0.6000003, z: 2.6000006}
+  m_Center: {x: 1.3000079, y: 0.0000038146973, z: -0.00000023841858}
 --- !u!1 &633314593 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6e231fbed3d00bc46a5899277e5c91a3, type: 3}
@@ -22870,6 +22939,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -23077,6 +23147,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -23360,6 +23431,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -23509,6 +23581,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -23730,6 +23803,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -23969,6 +24043,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -24125,6 +24200,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -24685,6 +24761,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -24911,6 +24988,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -25119,6 +25197,111 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 72ee4a1eb6a400d4ea5dcbc86eaf6fb7, type: 3}
   m_PrefabInstance: {fileID: 733795511}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &738117691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 738117692}
+  - component: {fileID: 738117693}
+  - component: {fileID: 738117694}
+  m_Layer: 0
+  m_Name: Washer&Dryer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &738117692
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 738117691}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 14.470173, y: 0.5, z: 8.940002}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1963457355}
+  m_Father: {fileID: 333319710}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &738117693
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 738117691}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.86, y: 9.12, z: 3.34}
+  m_Center: {x: 1.92, y: 5, z: 1.82}
+--- !u!114 &738117694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 738117691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 117d0af1cafd96145b75935b843389ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoIconPos: 0
+  iconPos: {x: 0, y: 0, z: 0}
+  autoCameraOffset: 1
+  objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
+  data:
+  - Key: type
+    Value: 
+  - Key: description
+    Value: 
+  - Key: name
+    Value: 
+  - Key: color
+    Value: 
+  - Key: x_rotation
+    Value: 0
+  - Key: y_rotation
+    Value: 10
+  - Key: z_rotation
+    Value: 0
+  - Key: scale_change_x
+    Value: -.2
+  - Key: scale_change_y
+    Value: -.2
+  - Key: scale_change_z
+    Value: -.2
+  - Key: position_change_x
+    Value: 0
+  - Key: position_change_y
+    Value: 0
+  - Key: position_change_z
+    Value: 1
+  _col: {fileID: 0}
+  initialAmplitudeX: 0
+  initialAmplitudeY: 0
+  initialAmplitudeZ: 3
+  frequency: 15
+  fadeDuration: 2
 --- !u!1001 &749125312
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25490,6 +25673,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -25868,6 +26052,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -26103,6 +26288,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 5, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: -1, z: 5}
+  masked: 0
   data: []
   _col: {fileID: 0}
   object1: {fileID: 1944871981}
@@ -26246,6 +26432,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -26895,6 +27082,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -27532,6 +27720,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -27616,6 +27805,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -27858,6 +28048,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 10, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: -5, z: 12}
+  masked: 0
   data: []
   _col: {fileID: 0}
   object1: {fileID: 1095995436}
@@ -28290,6 +28481,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -33376,6 +33568,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 10, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: -5, z: 12}
+  masked: 0
   data: []
   _col: {fileID: 0}
   object1: {fileID: 1104499567}
@@ -33450,6 +33643,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -33848,6 +34042,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 3.5, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: -1, z: 5}
+  masked: 0
   data: []
   _col: {fileID: 0}
   object1: {fileID: 433933146}
@@ -33920,6 +34115,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -34220,6 +34416,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -34441,7 +34638,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.7631168, y: 1.897537, z: 0.80000013}
   m_Center: {x: 1.8815584, y: 0.9487685, z: 0.05000001}
---- !u!114 &1011568893
+--- !u!114 &1011568896
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -34457,7 +34654,34 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
-  data: []
+  masked: 1
+  data:
+  - Key: type
+    Value: 
+  - Key: description
+    Value: 
+  - Key: name
+    Value: 
+  - Key: color
+    Value: 
+  - Key: x_rotation
+    Value: 0
+  - Key: y_rotation
+    Value: 0
+  - Key: z_rotation
+    Value: 0
+  - Key: scale_change_x
+    Value: 0
+  - Key: scale_change_y
+    Value: 0
+  - Key: scale_change_z
+    Value: 0
+  - Key: position_change_x
+    Value: 0
+  - Key: position_change_y
+    Value: 0
+  - Key: position_change_z
+    Value: 0
   _col: {fileID: 0}
   doorTr: {fileID: 1011568889}
   targetRot1: {x: 0, y: 0, z: 0}
@@ -34942,6 +35166,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -35849,6 +36074,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -36075,6 +36301,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -36985,6 +37212,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -37225,6 +37453,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -37473,6 +37702,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -38017,6 +38247,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -38074,6 +38305,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -38538,6 +38770,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -38698,6 +38931,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -39047,6 +39281,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -39324,6 +39559,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -39615,6 +39851,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -39792,6 +40029,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: fridge_freezer
@@ -39800,11 +40038,11 @@ MonoBehaviour:
   - Key: y_rotation
     Value: 0
   - Key: scale_change_x
-    Value: 0
+    Value: -.2
   - Key: scale_change_y
-    Value: 0
+    Value: -.2
   - Key: scale_change_z
-    Value: 0
+    Value: -.2
   - Key: position_change_x
     Value: 0
   - Key: position_change_y
@@ -39837,7 +40075,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 4.53, y: 9.2, z: 3.11}
-  m_Center: {x: 0.4, y: 14.84, z: 1.5}
+  m_Center: {x: 0.4, y: 5.02, z: 1.5}
 --- !u!1001 &1391320613
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39963,6 +40201,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -40151,7 +40390,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2563297373110213474, guid: 6c7f06c6a702d4d41bba4b5576adc82c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0.52
       objectReference: {fileID: 0}
     - target: {fileID: 2563297373110213474, guid: 6c7f06c6a702d4d41bba4b5576adc82c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -40245,9 +40484,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5436741564957258347, guid: 6c7f06c6a702d4d41bba4b5576adc82c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1399883335}
-    - targetCorrespondingSourceObject: {fileID: 2592644785667991219, guid: 6c7f06c6a702d4d41bba4b5576adc82c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 446726385}
   m_SourcePrefab: {fileID: 100100000, guid: 6c7f06c6a702d4d41bba4b5576adc82c, type: 3}
 --- !u!4 &1399883330 stripped
 Transform:
@@ -40275,6 +40511,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -40429,6 +40666,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 5, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: -1, z: 5}
+  masked: 0
   data: []
   _col: {fileID: 0}
   object1: {fileID: 784278508}
@@ -40581,6 +40819,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -45591,6 +45830,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -45734,6 +45974,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -45947,6 +46188,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -46104,6 +46346,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -46232,6 +46475,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -46399,6 +46643,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -46880,6 +47125,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -47435,6 +47681,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -47712,6 +47959,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -47920,6 +48168,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -48091,6 +48340,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -48148,6 +48398,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -48244,6 +48495,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -48503,6 +48755,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -48981,6 +49234,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -49326,6 +49580,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -49569,6 +49824,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: a stew pot full of a vegetable soup (the soup's color is orange and three
@@ -49712,6 +49968,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -49778,6 +50035,7 @@ MonoBehaviour:
   lumiere_chat_button: {fileID: 619911228}
   lumiere_word_button: {fileID: 187259501}
   lumiere_menu: {fileID: 1126182296}
+  hud_selected_objects: {fileID: 0}
   lumiere_menu_close: {fileID: 1757109616}
   lumiere_story: {fileID: 1572408534}
   lumiere_word: {fileID: 2136645176}
@@ -50232,6 +50490,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -50329,6 +50588,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -50555,6 +50815,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -50721,6 +50982,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -50923,7 +51185,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1758924461
 Transform:
   m_ObjectHideFlags: 0
@@ -50940,7 +51202,6 @@ Transform:
   - {fileID: 790349065}
   - {fileID: 838465701}
   - {fileID: 2078575309}
-  - {fileID: 1963457355}
   - {fileID: 2141216351}
   - {fileID: 2074525251}
   - {fileID: 1719603854}
@@ -51161,6 +51422,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -51514,6 +51776,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -52020,6 +52283,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -52112,6 +52376,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -52409,6 +52674,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -52635,6 +52901,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 1
   data: []
   _col: {fileID: 0}
   doorTr: {fileID: 1827357815}
@@ -52765,6 +53032,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -52940,6 +53208,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -53150,6 +53419,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -53296,6 +53566,7 @@ MonoBehaviour:
   iconPos: {x: 1, y: 5, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: -2, z: 15}
+  masked: 0
   data: []
   _col: {fileID: 0}
   particles:
@@ -53468,6 +53739,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -53591,6 +53863,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -53787,6 +54060,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -53931,6 +54205,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -54036,6 +54311,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -59058,6 +59334,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -59396,6 +59673,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -59539,6 +59817,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -59753,6 +60032,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -59811,27 +60091,27 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1758924461}
+    m_TransformParent: {fileID: 738117692}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.470173
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.5400009
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_LocalRotation.x
@@ -59839,7 +60119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7071068
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
       propertyPath: m_LocalRotation.z
@@ -59861,10 +60141,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: washerDryerStacked
       objectReference: {fileID: 0}
+    - target: {fileID: 6250425657965572425, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6250425657965572425, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2090901530}
+    - targetCorrespondingSourceObject: {fileID: 6250425657965572425, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2090901529}
+    - targetCorrespondingSourceObject: {fileID: 4888388292202968741, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 623173874}
+    - targetCorrespondingSourceObject: {fileID: 4888388292202968741, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 623173875}
   m_SourcePrefab: {fileID: 100100000, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
 --- !u!4 &1963457355 stripped
 Transform:
@@ -59996,6 +60292,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -60157,6 +60454,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -60311,6 +60609,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -65393,6 +65692,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -65633,6 +65933,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -65801,6 +66102,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -65957,6 +66259,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -66221,6 +66524,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -66639,6 +66943,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -66889,6 +67194,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -67028,6 +67334,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -67169,6 +67476,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -67317,6 +67625,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -67744,6 +68053,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -67810,6 +68120,85 @@ Transform:
   m_Father: {fileID: 1192326914}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2090901525 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6250425657965572425, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+  m_PrefabInstance: {fileID: 1963457354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2090901526 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5843041369281241482, guid: 9cfaaeb792a5ff043bf67f0e78ca312d, type: 3}
+  m_PrefabInstance: {fileID: 1963457354}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &2090901529
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090901525}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.7000008, y: 2.6, z: 0.7000002}
+  m_Center: {x: 1.350008, y: 0, z: 0.05000001}
+--- !u!114 &2090901530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090901525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a01c86bc3a4def448e69a89c03e26db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoIconPos: 0
+  iconPos: {x: 0, y: 0, z: 0}
+  autoCameraOffset: 1
+  objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 1
+  data:
+  - Key: type
+    Value: 
+  - Key: description
+    Value: 
+  - Key: name
+    Value: 
+  - Key: color
+    Value: 
+  - Key: x_rotation
+    Value: 0
+  - Key: y_rotation
+    Value: 0
+  - Key: z_rotation
+    Value: 0
+  - Key: scale_change_x
+    Value: 0
+  - Key: scale_change_y
+    Value: 0
+  - Key: scale_change_z
+    Value: 0
+  - Key: position_change_x
+    Value: 0
+  - Key: position_change_y
+    Value: 0
+  - Key: position_change_z
+    Value: 0
+  _col: {fileID: 2090901529}
+  doorTr: {fileID: 2090901526}
+  targetRot1: {x: 0, y: 0, z: 0}
+  targetRot2: {x: 0, y: 120, z: 0}
 --- !u!1 &2093507162
 GameObject:
   m_ObjectHideFlags: 0
@@ -67874,6 +68263,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -68036,6 +68426,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -68418,6 +68809,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -68565,6 +68957,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -68955,6 +69348,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -69031,6 +69425,7 @@ MonoBehaviour:
   iconPos: {x: 0, y: 0, z: 0}
   autoCameraOffset: 0
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
+  masked: 0
   data:
   - Key: type
     Value: 
@@ -69138,7 +69533,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1720518861220187126, guid: cb8abffb0fec1df49a8721d5a33a07b2, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1792232325234202775, guid: cb8abffb0fec1df49a8721d5a33a07b2, type: 3}
       propertyPath: m_Enabled
@@ -69194,7 +69589,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5767506535095489653, guid: cb8abffb0fec1df49a8721d5a33a07b2, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8532220476600996220, guid: cb8abffb0fec1df49a8721d5a33a07b2, type: 3}
       propertyPath: m_Materials.Array.size
@@ -69237,7 +69632,7 @@ PrefabInstance:
       addedObject: {fileID: 1011568892}
     - targetCorrespondingSourceObject: {fileID: 1720518861220187126, guid: cb8abffb0fec1df49a8721d5a33a07b2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1011568893}
+      addedObject: {fileID: 1011568896}
     - targetCorrespondingSourceObject: {fileID: 5767506535095489653, guid: cb8abffb0fec1df49a8721d5a33a07b2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1827357818}
