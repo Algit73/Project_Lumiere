@@ -145,7 +145,7 @@ public class Story_Telling : MonoBehaviour
                              " 4. " + story.paragraphs[story_step].choice_2;
 
         cmd.Manager.Card.Chat_Context = story.paragraphs[story_step].text;
-        cmd.Manager.Card.QuestionText = story.paragraphs[story_step].question;
+        cmd.Manager.Card.FeedbackText = story.paragraphs[story_step].question;
         cmd.Manager.Card.Question_Items = question_items;
         cmd.Manager.Card.ResultText = "";
         Debug.Log($"story right answer: {story.paragraphs[story_step].answer}");
@@ -244,7 +244,7 @@ public class Story_Telling : MonoBehaviour
         if (story_step == 0)
         {
             cmd.Manager.Card.Chat_Context = Instructions.story_finished;
-            cmd.Manager.Card.QuestionText = Instructions.try_story_again;
+            cmd.Manager.Card.FeedbackText = Instructions.try_story_again;
             cmd.Manager.Card.Question_Items = "1. Yes   2. No";
             story_step++; /// Redundant line to make a delay that user can make a decision
         }

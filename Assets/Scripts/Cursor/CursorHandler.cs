@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 // this class will handle cursor actions like which object is currently being hover or which one we will click on
 
 public class CursorHandler : MonoBehaviour
@@ -10,8 +11,23 @@ public class CursorHandler : MonoBehaviour
     private Transform _objectTr;
     private IClickable _clickable;
     private bool _isFound;
+    private GameObject LumiereFindObj;
+
+    private const string LUMIERE_FIND_NAME = "Lumiere_Find";
+    private Finding_Items Finding_Items_Component;
 
     private void Awake() => _mainCam = Camera.main;
+
+    private void Start() 
+    {
+        LumiereFindObj = GameObject.Find(LUMIERE_FIND_NAME);
+        if (LumiereFindObj == null)
+        {
+            Debug.LogError("CursorHandler: Lumiere_Find object not found in the scene.");
+            return;
+        }
+        Finding_Items_Component = LumiereFindObj.GetComponent<Finding_Items>();
+    }
     private void Update()
     {
         Ray ray = _mainCam.ScreenPointToRay(Input.mousePosition);
@@ -57,8 +73,12 @@ public class CursorHandler : MonoBehaviour
             _objectTr = null;
         }
 
-        if (_isFound && Input.GetMouseButtonDown(0)) 
+        if (_isFound && Input.GetMouseButtonDown(0))
+        { 
             _clickable.OnClick();
+            Finding_Items_Component.OnObjectClick();
+        
+        }
     }
 
     // private Transform FindRootTransform(Transform hitTransform)
@@ -107,6 +127,9 @@ public class CursorHandler : MonoBehaviour
             SelectAllChildren(child);
         }
     }
+
+
+    
 
     
 }

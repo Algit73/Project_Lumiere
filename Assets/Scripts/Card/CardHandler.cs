@@ -6,7 +6,7 @@ using UnityEngine;
 public class CardHandler : MonoBehaviour
 {
     [SerializeField] private RectTransform cardRectTr;
-    [SerializeField] private TextMeshProUGUI questionText;
+    [SerializeField] private TextMeshProUGUI feedbackText;
     [SerializeField] private TextMeshProUGUI resultText;
     [SerializeField] private TextMeshProUGUI chat_context;
     [SerializeField] private TextMeshProUGUI question_items;
@@ -17,13 +17,23 @@ public class CardHandler : MonoBehaviour
     //private Vector2 _hiddenCardPos = new Vector2(600f, 1180);
     //private Vector2 _shownCardPos = new Vector2(-140f, 440f);
     private static Transform[] _objectsInCard;
+    public List<string> ObjsInCardNames { get; } = new List<string>();
+    private const int CARDS_LEN = 6;
 
-    public string QuestionText { set => questionText.text = value; }
+
+
+    public string FeedbackText {get => feedbackText.text; set => feedbackText.text = value; }
     public string ResultText { set => resultText.text = value; }
     public string Chat_Context { set => chat_context.text = value; }
     public string Question_Items { set => question_items.text = value; }
 
     public static bool CardIsOpen;
+
+    private void Awake() 
+    {
+        for(int i = 0; i < CARDS_LEN; i++) ObjsInCardNames.Add("");
+        
+    }
 
     private void Start()
     {
@@ -31,7 +41,7 @@ public class CardHandler : MonoBehaviour
 
         CommandsCenter.Manager.Card = this;
         chat_context.text = "";
-        questionText.text = "";
+        feedbackText.text = "";
         question_items.text = "";
         resultText.text = "";
         CardIsOpen  = true;
@@ -202,6 +212,9 @@ public class CardHandler : MonoBehaviour
         Vector3 newPosition = clone.transform.position + new Vector3(position_change_x, position_change_y, position_change_z);
         clone.transform.position = newPosition;
 
+
+        if (clone.name.Length>0)
+            ObjsInCardNames[imageNum] = clone.name.Remove(clone.name.Length - 1).Replace("_Card", "");
         _objectsInCard[imageNum] = clone.transform;
     }
 
@@ -256,10 +269,27 @@ public class CardHandler : MonoBehaviour
         return -1;
     }
 
+    public bool is_card_empty()
+    {
+        for (int i = 0; i < _objectsInCard.Length; i++)
+        {
+            if (_objectsInCard[i] != null)
+                return false;
+        }
+
+        return true;
+    }
+
+    public void reset_all_cards()
+    {
+        for (int i = 0; i < _objectsInCard.Length; i++)
+            StartCoroutine(ResetImage(i));
+    }
+
     public void reset_card_texts()
     {
         Chat_Context = "";
-        QuestionText = "";
+        FeedbackText = "";
         Question_Items = "";
         ResultText = "";
     }

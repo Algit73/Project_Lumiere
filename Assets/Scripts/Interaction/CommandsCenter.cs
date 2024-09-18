@@ -10,7 +10,7 @@ public class CommandsCenter : MonoBehaviour
     [SerializeField] private Transform cam;
     [SerializeField] private string commandData;
     [SerializeField] private bool command;
-    [SerializeField] private string[] test;
+    // [SerializeField] private string[] test;
 
     private Dictionary<string, Interactive> _interactivesDic;
     private Vector3 _cardFixDis;
@@ -18,6 +18,11 @@ public class CommandsCenter : MonoBehaviour
 
     public CardHandler Card { set; get; }
     public bool CommandsAreDone { private set; get; }
+
+    /// if the items are allowed to be added to the card
+    public bool is_allowed_to_card { set; get; } = true; 
+
+    public bool single_object_card_mode;
 
     private void Awake()
     {
@@ -54,16 +59,27 @@ public class CommandsCenter : MonoBehaviour
     }
     public void AddObjectToCard(InteractionData commandData)
     {
-        int emptyCardNum = Card.GetEmptyCardNumber();
+        if (single_object_card_mode)
+            StartCoroutine(put_single_object_in_card(commandData));
+        else
+        {
+            int emptyCardNum = Card.GetEmptyCardNumber();
 
-        if (emptyCardNum == -1) return;
+            if (emptyCardNum == -1) return;
 
-        CommandsAreDone = false;
+            CommandsAreDone = false;
 
-        commandData.ActionName = "SetImage";
-        commandData.DataFloatValues = new float[] { emptyCardNum };
+            commandData.ActionName = "SetImage";
+            commandData.DataFloatValues = new float[] { emptyCardNum };
 
-        StartCoroutine(CommandCard(commandData));
+            StartCoroutine(CommandCard(commandData));
+        }
+    }
+
+    private IEnumerator put_single_object_in_card(InteractionData commandData)
+    {
+        yield return StartCoroutine(Card.ResetImage(0));
+        Card.SetImage(_interactivesDic[commandData.DataStringValue], 0);
     }
 
     private IEnumerator SetCommands(string data)
@@ -152,7 +168,7 @@ public class CommandsCenter : MonoBehaviour
                 yield return Card.ResetImage(int.Parse(data.DataStringValue));
                 break;
             case "SetQuestion":
-                Card.QuestionText = data.DataStringValue;
+                Card.FeedbackText = data.DataStringValue;
                 break;
             case "SetResult":
                 Card.ResultText = data.DataStringValue;

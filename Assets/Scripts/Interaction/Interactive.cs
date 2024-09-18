@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+using cmd = CommandsCenter;
 
 public abstract class Interactive : MonoBehaviour, IClickable
 {
@@ -188,14 +189,20 @@ public abstract class Interactive : MonoBehaviour, IClickable
     public void OnClick()
     {
         // if (!CardHandler.CardIsOpen || Prohibited_Objects.names.Contains(name)) Action();
-        InteractionData data = new InteractionData();
+        if (!CardHandler.CardIsOpen && !cmd.Manager.is_allowed_to_card) Action();
+        else
+        {
+            InteractionData data = new InteractionData();
 
-        // check if the name is not in the list named prohibited_objs and if it was, return nothing
-        // if (Prohibited_Objects.names.Contains(name)) return;
-        data.DataStringValue = name;
-        // write a code that if the name was in a list, the next line will be neglected
-        if (!masked) CommandsCenter.Manager.AddObjectToCard(data);
-        else Action();
+            // check if the name is not in the list named prohibited_objs and if it was, return nothing
+            // if (Prohibited_Objects.names.Contains(name)) return;
+            data.DataStringValue = name;
+            // write a code that if the name was in a list, the next line will be neglected
+                
+            if (!masked) CommandsCenter.Manager.AddObjectToCard(data);
+            else Action();
+        }
+         
     }
     public string GetMeta(string key)
     {

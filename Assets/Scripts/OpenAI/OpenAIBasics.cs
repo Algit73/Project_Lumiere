@@ -127,7 +127,7 @@ public class OpenAIBasics //: MonoBehaviour
         var messages = new List<Message>
         {new Message(Role.System, system_prompt)};
 
-        var chatRequest = new ChatRequest(messages, GPT4_O_MODEL, temperature:1);
+        var chatRequest = new ChatRequest(messages, GPT4_O_MODEL, temperature:0.5);
         // var chatRequest = new ChatRequest(messages, GPT4_TURBO_MODEL, temperature:1);
         var response = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
         
