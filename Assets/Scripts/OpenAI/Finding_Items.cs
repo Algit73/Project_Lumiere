@@ -32,6 +32,7 @@ public class Finding_Items : MonoBehaviour
     enum Method_Num {M1, M2, M3, M4, M5, M6}
     // struct Method_Index {public int Mi1, Mi2, Mi3, Mi4, Mi5, Mi6;}
     private const int METHODS_LEN = 6;
+    private const int RANDOM_OBJS_COUNT = 12;
     // struct MethodX_Prompts {public string Mp1, Mp2, Mp3, Mp4, Mp5, Mp6;}
 
     private Method_Num m_method_num;
@@ -40,11 +41,10 @@ public class Finding_Items : MonoBehaviour
 
     private Finding_Items_Obj QAObjects;
 
-    [SerializeField] private T2S t2s;
-
-
 
     [SerializeField] private UnityEngine.UI.Button confirm_button;
+    [SerializeField] private GameObject chat_background_obj;
+    [SerializeField] private GameObject hint_background_obj;
     // [SerializeField] private UnityEngine.UI.Button Ammat;
 
     private bool is_story_finished = false;
@@ -52,6 +52,9 @@ public class Finding_Items : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // initiate chat_background_obj 
+
+        
         // string filePath = Application.dataPath + "/Scripts/OpenAI/json.txt";
         // string fileContent = File.ReadAllText(filePath);
         // Finding_Items_Obj methodsContainer = Finding_Items_Obj.FromJson(fileContent);
@@ -92,11 +95,10 @@ public class Finding_Items : MonoBehaviour
 
         /// check if there is any item inside the card
         cmd.Manager.Card.Chat_Context = Find_Instructs.find_waiting_message;
-        // TTSManager.Manager.Speak(Find_Instructs.find_waiting_message);
-        t2s.Speak(Find_Instructs.find_waiting_message);
+        TTSManager.Manager.Speak(Find_Instructs.find_waiting_message);
 
         /// Creating a list of random objects to find
-        Dictionary<string, string> random_items_dic = random_obj_extracor();
+        Dictionary<string, string> random_items_dic = random_obj_extracor(RANDOM_OBJS_COUNT);
 
         /// Request modified prompt
         var game_plot_prompt = main_prompt_modifying(random_items_dic);
@@ -136,9 +138,9 @@ public class Finding_Items : MonoBehaviour
         return input;
     }
 
-    private Dictionary<string, string> random_obj_extracor()
+    private Dictionary<string, string> random_obj_extracor(int count)
     {
-        Dictionary<string, string> random_kitchen_items = KitchenItems.GetRandomItems(10);
+        Dictionary<string, string> random_kitchen_items = KitchenItems.GetRandomItems(count);
 
         // foreach (var item in random_kitchen_items.Keys.ToList())
         // {
@@ -190,13 +192,13 @@ public class Finding_Items : MonoBehaviour
 
 
 
-    private String main_prompt_modifying(Dictionary<string, string> random_items_dic)
+    private string main_prompt_modifying(Dictionary<string, string> random_items_dic)
     {
         var modified = Find_Instructs.teacher_findng_role_v01;
         for (int i = 0; i < random_items_dic.Count; i++)
         {
-            modified = modified.Replace($"{{items_{i}}}", random_items_dic.ElementAt(i).Key);
-            modified = modified.Replace($"{{descrition_{i}}}", random_items_dic.ElementAt(i).Value);
+            modified = modified.Replace($"{{items_{i+1}}}", random_items_dic.ElementAt(i).Key);
+            modified = modified.Replace($"{{descrition_{i+1}}}", random_items_dic.ElementAt(i).Value);
         }
 
         return modified;
@@ -215,8 +217,7 @@ public class Finding_Items : MonoBehaviour
         /// initiating the prompt
         method_prompts[method_num] = Find_Instructs.teacher_finding_feedback.Replace("{METHOD}",Find_Instructs.Methods[method_num]);
         method_prompts[method_num] += "\nQ: " + QAObject.Q + " - " + QAObject.A + " - " + KitchenItems.Items[QAObject.A];
-        // TTSManager.Manager.Speak(QAObject.Q);
-        t2s.Speak(QAObject.Q);
+        TTSManager.Manager.Speak(QAObject.Q);
         
         /// wating until the card being filled
         // while (cmd.Manager.Card.is_card_empty());
@@ -238,6 +239,7 @@ public class Finding_Items : MonoBehaviour
         // var user_answer = bool.Parse(method_1_obj.A);
         var user_answer = method_1_obj.A;
         cmd.Manager.Card.FeedbackText = method_1_obj.feedback;
+        hint_context_visbility(true);
         
 
         if (user_answer)
@@ -246,6 +248,9 @@ public class Finding_Items : MonoBehaviour
             cmd.Manager.Card.FeedbackText += "\n" + Find_Instructs.finding_finished;
             await Task.Delay(5000);
             cmd.Manager.Card.reset_all_cards();
+            
+            /// Make hint card invisible
+            hint_context_visbility(false);
 
             current_method_index++;
             if (current_method_index > 2)
@@ -262,21 +267,23 @@ public class Finding_Items : MonoBehaviour
             /// initiating the prompt
             method_prompts[method_num] = Find_Instructs.teacher_finding_feedback;
             method_prompts[method_num] += "\nQ: " + QAObject.Q + " - " + QAObject.A + " - " + KitchenItems.Items[QAObject.A];
-            // TTSManager.Manager.Speak(cmd.Manager.Card.FeedbackText+QAObject.Q);
-            t2s.Speak(cmd.Manager.Card.FeedbackText+QAObject.Q);
+            TTSManager.Manager.Speak(cmd.Manager.Card.FeedbackText+QAObject.Q);
+
         }
         else
         {
             /// resetting the card and do it again
             // var txt = "\n" + Find_Instructs.try_finding_again;
             cmd.Manager.Card.FeedbackText += "\n" + Find_Instructs.try_finding_again;
-            // TTSManager.Manager.Speak(cmd.Manager.Card.FeedbackText);
-            t2s.Speak(cmd.Manager.Card.FeedbackText);
+            TTSManager.Manager.Speak(cmd.Manager.Card.FeedbackText);
+
             await Task.Delay(5000);
             cmd.Manager.Card.reset_all_cards();
 
             method_prompts[method_num] += "\n" + llm_return;
         }
+
+        
     }
 
     private void AddToMethodNum(int value)
@@ -322,7 +329,10 @@ public class Finding_Items : MonoBehaviour
     }
 
     private void card_visible(bool visible)
-    {StartCoroutine(visible ? cmd.Manager.Card.ShowCard() : cmd.Manager.Card.HideCard());}
+    {
+        StartCoroutine(visible ? cmd.Manager.Card.ShowCard() : cmd.Manager.Card.HideCard());
+        chat_context_visbility(visible);
+    }
 
     
 
@@ -387,6 +397,9 @@ public class Finding_Items : MonoBehaviour
             
         }
     }
+
+    private void hint_context_visbility (bool visible) {hint_background_obj.SetActive(visible);}
+    private void chat_context_visbility (bool visible) {chat_background_obj.SetActive(visible);}
 
     public void OnObjectClick()
     {

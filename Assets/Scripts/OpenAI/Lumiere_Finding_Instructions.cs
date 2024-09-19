@@ -13,10 +13,10 @@ public static class Lumiere_Finding_Instructions
     private static string m_card_is_empty_alert = "Oops! First, you have to choose some items in the scene";
     public static string card_is_empty_alert { get { return m_card_is_empty_alert; } }
     
-    private static string m_finding_finished = "Hurray! You have done it! Let's go to the next one after I reset the card for you.";
+    private static string m_finding_finished = "Let's go to the next one after I reset the card for you.";
     public static string finding_finished { get { return m_finding_finished; } }
     
-    private static string m_try_finding_again = "OK, Let's do it again after I reset the card for you.";
+    private static string m_try_finding_again = "Let's do it again after I reset the card for you.";
     public static string try_finding_again { get { return m_try_finding_again; } }
 
 
@@ -52,7 +52,7 @@ public static class Lumiere_Finding_Instructions
           row 1: 1-_ 2-_ 3-_ 4-Empty_Pot 5-Stew_Pot 6-Oil_Bottle 7-Kitchen_Microwave 8-Coffee_Machine
           row 2: 1-Cooking_Knife 2-Cooking_Fork 3-Knife_Block 4-Frying_Pan 5-_ 6-Knife_Block 7-_ 8-Toaster
      III- Kitchen bar: it has two rows:
-          row 1: 1-_ 2-Milk_Carton 3-_ 4-Chocolate_Milk_Carton 5-Banana 6-_ 7-Chocolate_IceCream_Scoop 8_Lemonad_Soda_Cup 9-_ 10-_ 11-Pizza 12-Musterd_Bottle
+          row 1: 1-_ 2-Milk_Carton 3-_ 4-Chocolate_Milk_Carton 5-Banana 6-_ 7-Chocolate_IceCream_Scoop 8_Lemonad_Soda_Cup 9-_ 10-_ 11-Pizza 12-Mustard_Bottle
           row 2: 1-Kitchen_Blender 2-Apple 3-Strawberry 4-Cherries 5-Chocolate_Tablet 6-Vanilla_IceCream_Scoop 7-Whipped_Cream_Bar 8-Double_Cheese_Burger 9-Cheese_burger 10-Pizza_Cutter 11-Pizza 12-Ketchup_Bottle 13-Salad 14-Pepper_Shaker 15-Salt_Shaker    
      IV- Kitchen table: the table has 2 rows:
           row 1: 1-Croissant 2-Tea_Mug 3-Broth_Bowl 4-Chopsticks 5-Cake 6-Cake_Slicer 7-Soup_Bowl 8-Spoon 9-Knife 10-Fork 11-Paprika_Slice  12-Avocado_Half 13-Tomato_Slices 14-Bacons 15-Donut_Strawberry_Sprinkles 16-Donut_Simple 17-Donut_Chocolate 18-Coffee_Cup
@@ -93,6 +93,8 @@ public static class Lumiere_Finding_Instructions
      d- Method_4: Categorization Game, Objective: Work on cognitive grouping and language production, Example: ""Let’s find something that belongs in the kitchen.""
      e- Method_5: Memory and Repetition-Based Finding, Objective: Reinforce memory through repetition, Example: ""I’m going to show you an object. Look carefully! Now, can you find another one that looks just like it?""
      f- Method_6: Question and Answer Game, Objective: Encourage communication through question prompts, Example: ""Do you see something we can write with? Where is it?""
+    - you SHOULD NOT USE the examples I provided for you in the above. They are just to give you a hint
+    - YOU HAVE TO USE the items i give you as answer. DONT MAKE ANYTHING by yourself
     - Try to be creative in your questions, and not just repeat one. it's an IMPORTANT consideration
     - The kitchen has four sections (nodes), the following is the graph of the kitchen from the top:
     Fridge -- Stove top and counter top
@@ -100,10 +102,11 @@ public static class Lumiere_Finding_Instructions
           Kitchen table -- Kitchen bar
     
     - Now, you will act as follows:
-     1- You will be given 10 items randomly from the items in the kitchen and each have their own description
+     1- You will be given 12 items randomly from the items in the kitchen and each have their own description
      2- You have to use Method_1 to Method_6 and create three questions for each method
-     3- Generate the structure as follows and DONT ADD any thing after it:
-     {""Method_1"":[{""Question_1"":"""",""Answer_1"":""it should be the from given items in the scene""},{""Question_2"":""""},...},""Method_2"":[...],...}
+     3- In some method, you may want to show the item to the person, and then ask to find it in the scene. In these cases, fill ""Show_X"" with true. leave it false for the other cases.
+     4- Generate the structure as follows and DONT ADD any thing after it:
+     {""Method_1"":[{""Question_1"":"""",""Answer_1"":""it should be from teh given items in the scene"", ""Show_1"":""""},{""Question_2"":""""},...},""Method_2"":[...],...}
      use the following format:
      
     - The following are the given items and their descritpion (the format is item, descritpion and):
@@ -117,38 +120,41 @@ public static class Lumiere_Finding_Instructions
      8- {items_8},{descrition_8}
      9- {items_9},{descrition_9}
      10- {items_10},{descrition_10}
+     11- {items_11},{descrition_11}
+     12- {items_12},{descrition_12}
      
      the naming schema of the items in above is as follows:
      ""items_x_Place"", where the _Place is added according to the place of the object: Fridge -> _Fridge, Stove top and counter top -> _Stove, Kitchen bar -> _Bar, Kitchen table -> _Table
      In your answers, you SHOULD keep the naming of the items as provided to you originially. DONT DROP the _Place from the end of the items in your answers
-     Your output MUST start with { and end with }. DONT add any word, charachter or anything else the beigining and end
+     Your output MUST start with { and end with }. DONT add any word, charachter or anything else at the begining and end
      ";
     // {""preface"":"""", ""paragraph_0"":{[""text"":""continue the story"", ""question"":""ask a question about it"", ""answer"":""right answer"", ""choice_0"":""wrong answer"", ""choice_1"":""wrong answer"", ""choice_2"":""wrong answer""]}, ""paragraph_1"":{...}}";
     // create a get for the teacher_story_role_v01
     public static string teacher_findng_role_v01
-    {get { return m_teacher_finding_role_v01; }}
+    {get { return m_teacher_finding_role_v01_5; }}
     // adult man, laptop, bed lamp
 
     private static string m_teacher_finding_feedback = 
     @"Your an aphasia therapist and will play with an aphasic person.
-    - You will be given a series of questions and their answers.
+    - You will be given a series of questions and their answers (Q&As).
     - The questions are about the items inside a kitchen
     - The questions are designed based on the following method:
      {METHOD}
-    - You should note that the answers are not necessary unique as some items may have common physical or funcitonal aspects
-    - when the user gives its answer, whether it was exactly as the provided answer or not, you SHOULD talk in the constructive way and DONT use harsh words. you SHOULD be FRIENDLY.
-    - The provided answer, and the user's answer come with a short description. 
-    - If the user's answer was almost correct, conclude the exam as passed (fill ""A"" with true)
-    - If the user's answer was not acceptable, try to find what are similar between the two answers and ask friendly that if the user can find another object (fill ""A"" with false)
-    - NEVER mention the provide answer of the question in your feedback.
+    - Your job is to qualify if the user answer is acceptable or not
+    - Based on the original question and answer that I give to you, judge the user's answer. If the user's answer is a fit with the Q&As, accept it. Example: Q- what fruit is round and red?, A- Apple, User- Tomato, (Acceptable answer)
+    - when the user gives its answer, whether it was acceptable or not, you SHOULD talk in the constructive way and DONT use harsh words. you SHOULD be FRIENDLY.
+    - The provided answer, and the user's answer come with a short description. you can use this description to enhance your feedbacks and giving better details. 
+    - If the user's answer was almost correct, conclude the exam as passed (fill ""A"" with true and fill ""feedback"" with a note, congradulate, and explain why the answer is right)
+    - If the user's answer was not acceptable, in a friendly way, explain why the answer is not right, then give more detail about the acceptable answer (fill ""A"" with false and fill ""feedback"" with a note, and give more detail about the acceptable answer)
+    - If the user's answer was acceptable then NEVER mention and talk about the original answer (Q&A) of the question.
     - If the user was wrong, give more hints and better descriptions that helps them like where they should look after and talk more about like color, size, usages, etc.
-    - the conversation will be continued as Q and A and your out put in three different lines
-    - The answer, which are the name of objects, are structured as NAME_PLACE, e.g. Musterd_Bottle_Bar (Musterd_Bottle placed on the Bar), Knife_Block_Stove (Knife Block placed on the stove)
-    - your output should ONLY be in the following format and don't ANYTHING before and after it!:
-     {""feedback"":""based on the uesr answer give a short friendly explanation"",""A"":""""}
-    - the following is an example:
-    Q: <QUESTION> - <RIGHT ANSWER> - <ADDITIONAL DESCRIPTION of ANSWER>
-    A: <USER ANSWER> - <ADDITIONAL DESCRIPTION of ANSWER>
+    - the conversation will be continued as Q and A and your output is structured in three different lines
+    - The answer, which is the name of an object, i structured as NAME_PLACE, e.g. Musterd_Bottle_Bar (Musterd_Bottle placed on the Bar), Knife_Block_Stove (Knife Block placed on the stove)
+    - your output should ONLY be in the following format and DONT ADD ANYTHING before and after it!:
+     {""feedback"":"""",""A"":""""}
+    - the following is the structure of your chat:
+    Q: <QUESTION> - <RIGHT ANSWER> - <ADDITIONAL DESCRIPTION of RIGHT ANSWER>
+    A: <USER ANSWER> - <ADDITIONAL DESCRIPTION of USER ANSWER>
     {""feedback"":"""",""A"":""""}
     OK, Let's start:";
     // {""preface"":"""", ""paragraph_0"":{[""text"":""continue the story"", ""question"":""ask a question about it"", ""answer"":""right answer"", ""choice_0"":""wrong answer"", ""choice_1"":""wrong answer"", ""choice_2"":""wrong answer""]}, ""paragraph_1"":{...}}";

@@ -8,7 +8,7 @@ public class TTSManager : MonoBehaviour
     private static TTSManager instance;
 
     // Reference to the LMNTSpeech component
-    private LMNT_Rev speech;
+    // private LMNT_Rev speech;
     
 
     // Singleton property to access the instance
@@ -46,14 +46,14 @@ public class TTSManager : MonoBehaviour
 
     private void Start() 
     {
-        speech = GetComponent<LMNT_Rev>();
+        // speech = GetComponent<LMNT_Rev>();
         
     }
 
     // Public method to trigger speech
     public void Speak(string dialogue)
     {
-        speech = GetComponent<LMNT_Rev>();
+        LMNT_Rev speech = GetComponent<LMNT_Rev>();
         speech.dialogue = dialogue;
         StartCoroutine(speech.Talk());
     }

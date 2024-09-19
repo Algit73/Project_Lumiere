@@ -15,6 +15,7 @@ public class QuestionAnswer
 {
     public string Q { get; set; }
     public string A { get; set; }
+    public bool show { get; set; }
 }
 
 // Class to hold the list of QuestionAnswer pairs for each method
@@ -43,7 +44,8 @@ public class Finding_Items_Obj
                 method.QAndAs.Add(new QuestionAnswer
                 {
                     Q = questionAnswerDict.Values.ElementAt(0),
-                    A = questionAnswerDict.Values.ElementAt(1)
+                    A = questionAnswerDict.Values.ElementAt(1),
+                    show = bool.Parse(questionAnswerDict.Values.ElementAt(2))
                 });
                 // foreach (var kvp in questionAnswerDict)
                 // {
