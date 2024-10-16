@@ -60,7 +60,7 @@ public class CommandsCenter : MonoBehaviour
     public void AddObjectToCard(InteractionData commandData)
     {
         if (single_object_card_mode)
-            StartCoroutine(put_single_object_in_card(commandData));
+            StartCoroutine(put_single_object_in_card(commandData.DataStringValue, 0));
         else
         {
             int emptyCardNum = Card.GetEmptyCardNumber();
@@ -76,10 +76,10 @@ public class CommandsCenter : MonoBehaviour
         }
     }
 
-    private IEnumerator put_single_object_in_card(InteractionData commandData)
+    public IEnumerator put_single_object_in_card(string obj,int card_num)
     {
-        yield return StartCoroutine(Card.ResetImage(0));
-        Card.SetImage(_interactivesDic[commandData.DataStringValue], 0);
+        yield return StartCoroutine(Card.ResetImage(card_num));
+        Card.SetImage(_interactivesDic[obj], card_num);
     }
 
     private IEnumerator SetCommands(string data)

@@ -33,6 +33,10 @@ public class Finding_Items : MonoBehaviour
     // struct Method_Index {public int Mi1, Mi2, Mi3, Mi4, Mi5, Mi6;}
     private const int METHODS_LEN = 6;
     private const int RANDOM_OBJS_COUNT = 12;
+
+    private const int CARD_NUM_0 = 0;
+    private const int CARD_NUM_1 = 1;
+    private const int CARD_NUM_2 = 2;
     // struct MethodX_Prompts {public string Mp1, Mp2, Mp3, Mp4, Mp5, Mp6;}
 
     private Method_Num m_method_num;
@@ -218,6 +222,10 @@ public class Finding_Items : MonoBehaviour
         method_prompts[method_num] = Find_Instructs.teacher_finding_feedback.Replace("{METHOD}",Find_Instructs.Methods[method_num]);
         method_prompts[method_num] += "\nQ: " + QAObject.Q + " - " + QAObject.A + " - " + KitchenItems.Items[QAObject.A];
         TTSManager.Manager.Speak(QAObject.Q);
+
+        /// Check to show the item inside the card
+        if (QAObject.show) 
+            show_item(QAObject.A);
         
         /// wating until the card being filled
         // while (cmd.Manager.Card.is_card_empty());
@@ -248,19 +256,30 @@ public class Finding_Items : MonoBehaviour
             cmd.Manager.Card.FeedbackText += "\n" + Find_Instructs.finding_finished;
             await Task.Delay(5000);
             cmd.Manager.Card.reset_all_cards();
-            
+
             /// Make hint card invisible
             hint_context_visbility(false);
 
             current_method_index++;
             if (current_method_index > 2)
             {
-                m_method_num = (Method_Num)((int)m_method_num + 1);
                 current_method_index = 0;
+
+                if (method_num == (METHODS_LEN-1))
+                {
+                    is_game_started = false;
+                    m_method_num = 0;
+                } 
+                
+                m_method_num = (Method_Num)((int)m_method_num + 1);
                 initiating_method((int)m_method_num);
                 return;
             }
             var QAObject = QAObjects[(int)method_num].QAndAs[current_method_index];
+
+            /// Check to show the item inside the card
+            if (QAObject.show) 
+                show_item(QAObject.A);
 
             ///Setting the chat context equal to the question
             cmd.Manager.Card.Chat_Context = QAObject.Q;
@@ -309,6 +328,11 @@ public class Finding_Items : MonoBehaviour
 
         // Do some work after the delay
         Debug.Log("Work completed after 2 seconds.");
+    }
+
+    private void show_item(string obj)
+    {
+        StartCoroutine(cmd.Manager.put_single_object_in_card(obj,CARD_NUM_1));
     }
 
 
