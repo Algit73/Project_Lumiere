@@ -93,7 +93,7 @@ public static class KitchenItems
         { "Fork_Table", "" },
         { "Paprika_Slice_Table", "" },
         { "Avocado_Half_Table", "" },
-        { "Tomato_Slices_Table", "" },
+        { "TomatoSlice_1", "" },
         { "Bacon_Table", "" },
         { "Donut_Strawberry_Sprinkles_Table", "" },
         { "Donut_Simple_Table", "" },
