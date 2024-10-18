@@ -20,7 +20,7 @@ public class CommandsCenter : MonoBehaviour
     public bool CommandsAreDone { private set; get; }
 
     /// if the items are allowed to be added to the card
-    public bool is_allowed_to_card { set; get; } = true; 
+    public bool is_allowed_to_card { set; get; } = false; 
 
     public bool single_object_card_mode;
 

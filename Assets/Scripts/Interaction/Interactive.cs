@@ -199,7 +199,7 @@ public abstract class Interactive : MonoBehaviour, IClickable
             data.DataStringValue = name;
             // write a code that if the name was in a list, the next line will be neglected
                 
-            if (!masked) CommandsCenter.Manager.AddObjectToCard(data);
+            if (!masked) cmd.Manager.AddObjectToCard(data);
             else Action();
         }
          
