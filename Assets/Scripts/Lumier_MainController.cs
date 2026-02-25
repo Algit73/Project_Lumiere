@@ -15,7 +15,7 @@ public class Lumier_MainController : MonoBehaviour
     [SerializeField] private Button lumiere_word_button;
     [SerializeField] private Button lumiere_find_button;
 
-    [SerializeField] private Image lumiere_menu;
+    [SerializeField] private GameObject lumiere_menu;
     [SerializeField] public  Image hud_selected_objects;
     [SerializeField] private Button lumiere_menu_close;
 
@@ -27,15 +27,29 @@ public class Lumier_MainController : MonoBehaviour
 
     void Awake()
     {
-        hud_selected_objects = GameObject.Find("HUD_Selected_Objects").GetComponent<Image>();
         if (hud_selected_objects == null)
-            Debug.LogError("Failed to find HUD_Selected_Objects or it doesn't have an Image component.");
+        {
+            var hud = GameObject.Find("HUD_Selected_Objects");
+            if (hud != null)
+            {
+                hud_selected_objects = hud.GetComponent<Image>();
+            }
+        }
+
+        if (hud_selected_objects == null)
+            Debug.LogWarning("HUD_Selected_Objects Image is not assigned/found. HUD show/hide will be skipped.");
     }
 
     // Start is called before the first frame update}
     // Start is called before the first frame update
     void Start()
     {
+        if (lumiere_button == null || lumiere_menu_close == null || lumiere_menu == null)
+        {
+            Debug.LogError("Lumier_MainController: Assign lumiere_button, lumiere_menu and lumiere_menu_close in Inspector.");
+            return;
+        }
+
         /// hiding on display menues
         hide_lumiere_menu();
         hide_hud();
@@ -44,8 +58,8 @@ public class Lumier_MainController : MonoBehaviour
         lumiere_glow_effect_init(lumiere_button);
 
         /// adding listeners to buttons
-        lumiere_button.onClick.AddListener(() => { lumiere_menu.gameObject.SetActive(true); sgEffect.StopGlow();});
-        lumiere_menu_close.onClick.AddListener(() => { lumiere_menu.gameObject.SetActive(false); sgEffect.StartGlow();});
+        lumiere_button.onClick.AddListener(() => { lumiere_menu.SetActive(true); sgEffect.StopGlow();});
+        lumiere_menu_close.onClick.AddListener(() => { lumiere_menu.SetActive(false); sgEffect.StartGlow();});
 
         Story_Telling story_telling = lumiere_story.GetComponent<Story_Telling>();
         
@@ -79,7 +93,10 @@ public class Lumier_MainController : MonoBehaviour
     }
 
     private void hide_lumiere_menu()
-    {lumiere_menu.gameObject.SetActive(false);}
+    {
+        if (lumiere_menu != null)
+            lumiere_menu.SetActive(false);
+    }
 
     public void hide_hud()
     {if (hud_selected_objects !=null) hud_selected_objects.gameObject.SetActive(false);}

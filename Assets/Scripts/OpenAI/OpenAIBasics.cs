@@ -25,6 +25,7 @@ public class OpenAIBasics //: MonoBehaviour
     string GPT35_TURBO_MODEL_125 = "gpt-3.5-turbo-0125";
     string GPT4_VISION_MODEL_1106 = "gpt-4-1106-vision-preview";
     string GPT4_VISION_MODEL= "gpt-4-vision-preview";
+    string GPT_5_MINI= "gpt-5-mini";
 
     // Instructions instruction;
 
@@ -127,7 +128,7 @@ public class OpenAIBasics //: MonoBehaviour
         var messages = new List<Message>
         {new Message(Role.System, system_prompt)};
 
-        var chatRequest = new ChatRequest(messages, GPT4_O_MODEL, temperature:0.5);
+        var chatRequest = new ChatRequest(messages, GPT_5_MINI, temperature:0.5);
         // var chatRequest = new ChatRequest(messages, GPT4_TURBO_MODEL, temperature:1);
         var response = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
         

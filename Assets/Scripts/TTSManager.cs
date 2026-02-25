@@ -1,11 +1,11 @@
 // TTSManager.cs
 
 using UnityEngine;
-using LMNT;
 
 public class TTSManager : MonoBehaviour
 {
     private static TTSManager instance;
+    private OpenAITTSManager openAiTts;
 
     // Reference to the LMNTSpeech component
     // private LMNT_Rev speech;
@@ -40,22 +40,41 @@ public class TTSManager : MonoBehaviour
             return;
         }
 
-        // Initialize the LMNTSpeech component
-        
-    }
-
-    private void Start() 
-    {
-        // speech = GetComponent<LMNT_Rev>();
-        
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+        CacheProviders();
     }
 
     // Public method to trigger speech
     public void Speak(string dialogue)
     {
-        LMNT_Rev speech = GetComponent<LMNT_Rev>();
-        speech.dialogue = dialogue;
-        StartCoroutine(speech.Talk());
+        if (string.IsNullOrWhiteSpace(dialogue))
+            return;
+
+        if (openAiTts == null)
+            CacheProviders();
+
+        var openAi = GetComponent<OpenAITTSManager>();
+        if (openAi != null)
+        {
+            openAi.Speak(dialogue);
+            return;
+        }
+
+        if (openAiTts != null)
+        {
+            openAiTts.Speak(dialogue);
+            return;
+        }
+
+        Debug.LogWarning("TTSManager: OpenAITTSManager not found. Add it to an active GameObject in scene.");
+    }
+
+    private void CacheProviders()
+    {
+        openAiTts = GetComponent<OpenAITTSManager>();
+        if (openAiTts == null)
+            openAiTts = FindObjectOfType<OpenAITTSManager>();
     }
 }
 

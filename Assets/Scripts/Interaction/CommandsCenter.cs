@@ -203,7 +203,7 @@ public class CommandsCenter : MonoBehaviour
 
     private void SetCamPos(Vector3 pos) => cam.position = pos + _camFixDis;
     private void SetCardPos(Vector3 pos) => Card.transform.position = pos + _cardFixDis;
-    private void SetEnvPos(Vector3 pos)
+    public void SetEnvPos(Vector3 pos)
     {
         env.position = pos;
         SetCamPos(pos);

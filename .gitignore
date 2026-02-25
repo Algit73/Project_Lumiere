@@ -61,6 +61,16 @@ sysinfo.txt
 *.unitypackage
 *.app
 
+# Full Android Studio export folder (generated)
+Android_Export/
+
+# Android export generated build outputs
+Android_Export/**/build/
+Android_Export/**/.gradle/
+Android_Export/**/intermediates/
+Android_Export/**/outputs/
+Android_Export/**/tmp/
+
 # Crashlytics generated file
 crashlytics-build.properties
 
@@ -74,3 +84,5 @@ crashlytics-build.properties
 
 # OpenAI key
 Assets/Scripts/OpenAI/OPENAI_KEY.txt
+Assets/Resources/OpenAIConfiguration.asset
+Assets/Resources/OpenAIConfiguration.asset.meta

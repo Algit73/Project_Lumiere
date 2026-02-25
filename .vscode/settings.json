@@ -52,5 +52,5 @@
         "Temp/": true
     },
     "dotnet.preferCSharpExtension": true,
-    "dotnet.defaultSolution": "Project_Lumiere.sln"
+    "dotnet.defaultSolution": "Lumiere_Android_Buggy.sln"
 }
