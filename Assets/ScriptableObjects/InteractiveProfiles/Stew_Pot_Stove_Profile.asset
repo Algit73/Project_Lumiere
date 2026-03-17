@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5623fc372d48c0448dcc06ef346639d, type: 3}
+  m_Name: Stew_Pot_Stove_Profile
+  m_EditorClassIdentifier: 
+  type: a stew pot full of a vegetable soup (the soup's color is orange and three
+    carrots are visible in it)  on the stove in the kitchen
+  description: A stew pot full of carrot soup, thet carrots are visible and soup
+    color is orange, on the stove in the kitchen
+  objectName: Stew_Pot_Stove
+  color: 

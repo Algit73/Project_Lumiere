@@ -44,9 +44,10 @@ public class Lumier_MainController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (lumiere_button == null || lumiere_menu_close == null || lumiere_menu == null)
+        if (lumiere_button == null || lumiere_menu_close == null || lumiere_menu == null ||
+            lumiere_story_button == null || lumiere_word_button == null || lumiere_find_button == null)
         {
-            Debug.LogError("Lumier_MainController: Assign lumiere_button, lumiere_menu and lumiere_menu_close in Inspector.");
+            Debug.LogError("Lumier_MainController: Assign all Lumiere buttons and menu references in Inspector.");
             return;
         }
 
@@ -58,8 +59,8 @@ public class Lumier_MainController : MonoBehaviour
         lumiere_glow_effect_init(lumiere_button);
 
         /// adding listeners to buttons
-        lumiere_button.onClick.AddListener(() => { lumiere_menu.SetActive(true); sgEffect.StopGlow();});
-        lumiere_menu_close.onClick.AddListener(() => { lumiere_menu.SetActive(false); sgEffect.StartGlow();});
+        lumiere_button.onClick.AddListener(OpenLumiereMenu);
+        lumiere_menu_close.onClick.AddListener(CloseLumiereMenu);
 
         Story_Telling story_telling = lumiere_story.GetComponent<Story_Telling>();
         
@@ -94,8 +95,23 @@ public class Lumier_MainController : MonoBehaviour
 
     private void hide_lumiere_menu()
     {
-        if (lumiere_menu != null)
-            lumiere_menu.SetActive(false);
+        CloseLumiereMenu();
+    }
+
+    private void OpenLumiereMenu()
+    {
+        if (lumiere_menu != null) lumiere_menu.SetActive(true);
+        if (lumiere_story_button != null) lumiere_story_button.gameObject.SetActive(true);
+        if (lumiere_word_button != null) lumiere_word_button.gameObject.SetActive(true);
+        if (lumiere_find_button != null) lumiere_find_button.gameObject.SetActive(true);
+
+        if (sgEffect != null) sgEffect.StopGlow();
+    }
+
+    private void CloseLumiereMenu()
+    {
+        if (lumiere_menu != null) lumiere_menu.SetActive(false);
+        if (sgEffect != null) sgEffect.StartGlow();
     }
 
     public void hide_hud()

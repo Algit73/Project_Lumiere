@@ -10,11 +10,19 @@ public class SwitchGameObject : Interactive
     {
         base.Start();
 
+        if (object1 == null || object2 == null)
+        {
+            Debug.LogWarning($"[SwitchGameObject] '{name}': object1 or object2 is not assigned in the Inspector.", this);
+            return;
+        }
+
         _object1IsActive = object1.activeInHierarchy;
     }
 
     public override void Action()
     {
+        if (object1 == null || object2 == null) { IsWorking = false; return; }
+
         object1.SetActive(!object1.activeInHierarchy);
         object2.SetActive(!object2.activeInHierarchy);
 
@@ -23,6 +31,8 @@ public class SwitchGameObject : Interactive
 
     public override void ResetObject()
     {
+        if (object1 == null || object2 == null) return;
+
         object1.SetActive(_object1IsActive);
         object2.SetActive(!_object1IsActive);
     }

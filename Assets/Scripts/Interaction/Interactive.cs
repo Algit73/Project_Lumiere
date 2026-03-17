@@ -11,6 +11,12 @@ public abstract class Interactive : MonoBehaviour, IClickable
     [SerializeField] private bool autoCameraOffset;
     [SerializeField] private Vector3 objectPosAgainstCamera;
     [SerializeField] private bool masked = false;   /// Masking the object from being selected
+
+    [Tooltip("Optional: assign a shared data profile. Identity fields (type/description/name/color) will come from here.")]
+    [SerializeField] private InteractiveDataSO profile;
+
+    // Per-instance transform delta values. Identity fields (type/description/name/color)
+    // are now handled by the profile ScriptableObject above.
     [SerializeField] public KeyAndValue[] data = new KeyAndValue[]
     {
         new KeyAndValue { Key = "type", Value = "" },
@@ -65,10 +71,25 @@ public abstract class Interactive : MonoBehaviour, IClickable
 
         Meta = new Dictionary<string, string>();
 
-
+        // If a profile is assigned, its 4 identity keys are authoritative — skip them from data
+        System.Collections.Generic.HashSet<string> profileKeys = profile != null
+            ? new System.Collections.Generic.HashSet<string> { "type", "description", "name", "color" }
+            : null;
 
         foreach (KeyAndValue item in data)
-            Meta.Add(item.Key, item.Value);
+        {
+            if (profileKeys != null && profileKeys.Contains(item.Key)) continue;
+            Meta[item.Key] = item.Value;
+        }
+
+        // Populate identity fields exclusively from the profile SO
+        if (profile != null)
+        {
+            Meta["type"]        = profile.type;
+            Meta["description"] = profile.description;
+            Meta["name"]        = profile.objectName;
+            Meta["color"]       = profile.color;
+        }
 
         // Get the collider component of the object
         if (_col == null)
@@ -98,11 +119,6 @@ public abstract class Interactive : MonoBehaviour, IClickable
 
         /// Check if the GlowEffect component is attached to this object
         glowEffect = GetComponent<GlowEffect>();
-        
-        if (glowEffect == null)
-        {
-            Debug.LogWarning("No GlowEffect component found on this object.");
-        }
     }
 
     private void Update()
