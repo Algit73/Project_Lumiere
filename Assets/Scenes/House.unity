@@ -17659,7 +17659,7 @@ MonoBehaviour:
   autoCameraOffset: 1
   objectPosAgainstCamera: {x: 0, y: 0, z: 0}
   masked: 0
-  profile: {fileID: 11400000, guid: 4c2f1d09dc67c7542bcfdff9b014fc93, type: 2}
+  profile: {fileID: 11400000, guid: 74a39c9e47dfb5e4c8518ee628de17dd, type: 2}
   data:
   - Key: type
     Value: 
@@ -20383,7 +20383,7 @@ MonoBehaviour:
   data: []
   _col: {fileID: 0}
   object1: {fileID: 1944871981}
-  object2: {fileID: 0}
+  object2: {fileID: 746857013}
 --- !u!65 &805016946
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21560,7 +21560,7 @@ MonoBehaviour:
   useHighDefinitionModel: 0
   responseFormat: 0
   speed: 0.9
-  playOnStart: 1
+  playOnStart: 0
   startupText: Helloooo!  Welcome!!! This is Lumiere!
 --- !u!1001 &878331967
 PrefabInstance:
@@ -23080,8 +23080,8 @@ MonoBehaviour:
   profile: {fileID: 11400000, guid: eb5e0344d34b5244d9a855e28e637b83, type: 2}
   data: []
   _col: {fileID: 0}
-  object1: {fileID: 0}
-  object2: {fileID: 0}
+  object1: {fileID: 1031451132}
+  object2: {fileID: 1905359982}
 --- !u!65 &987926653
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -24073,6 +24073,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 32.361, y: -90, z: 0}
+--- !u!1 &1031451132 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 63d064562bbd81a43a6626da79e5b136, type: 3}
+  m_PrefabInstance: {fileID: 812131025}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1040367471 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b158427d3ac75af4687608b481bc63bf, type: 3}
@@ -29721,7 +29726,7 @@ MonoBehaviour:
   data: []
   _col: {fileID: 0}
   object1: {fileID: 784278508}
-  object2: {fileID: 0}
+  object2: {fileID: 1164775659}
 --- !u!65 &1410579972
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -42973,6 +42978,11 @@ MonoBehaviour:
   initialAmplitudeZ: 3
   frequency: 15
   fadeDuration: 3
+--- !u!1 &1905359982 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 63d064562bbd81a43a6626da79e5b136, type: 3}
+  m_PrefabInstance: {fileID: 1333556537}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1905487659
 PrefabInstance:
   m_ObjectHideFlags: 0

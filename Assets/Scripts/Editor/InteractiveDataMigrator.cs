@@ -97,7 +97,7 @@ public class InteractiveDataMigrator : EditorWindow
             }
 
             // Extract identity fields from the data array
-            string type = "", description = "", objectName = interactive.gameObject.name, color = "";
+            string category = "", description = "", objectName = interactive.gameObject.name, color = "";
 
             for (int i = 0; i < dataProp.arraySize; i++)
             {
@@ -107,7 +107,7 @@ public class InteractiveDataMigrator : EditorWindow
 
                 switch (key)
                 {
-                    case "type":        type        = value; break;
+                    case "type":        category        = value; break;
                     case "description": description = value; break;
                     case "name":        objectName  = string.IsNullOrEmpty(value) ? interactive.gameObject.name : value; break;
                     case "color":       color       = value; break;
@@ -137,7 +137,7 @@ public class InteractiveDataMigrator : EditorWindow
             }
 
             // Populate the asset
-            asset.type        = type;
+            asset.category        = category;
             asset.description = description;
             asset.objectName  = objectName;
             asset.color       = color;

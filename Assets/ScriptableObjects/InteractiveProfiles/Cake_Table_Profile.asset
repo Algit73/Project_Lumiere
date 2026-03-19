@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5623fc372d48c0448dcc06ef346639d, type: 3}
   m_Name: Cake_Table_Profile
   m_EditorClassIdentifier: 
-  type: 
+  category: 
   description: a six slices whole layer cake with choco and strawberry layers and
     cream and six strawberry on top of it on the kitchen table
   objectName: Cake_Table
   color: 
+  flags: 0

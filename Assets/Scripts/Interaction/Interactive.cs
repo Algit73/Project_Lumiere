@@ -19,10 +19,6 @@ public abstract class Interactive : MonoBehaviour, IClickable
     // are now handled by the profile ScriptableObject above.
     [SerializeField] public KeyAndValue[] data = new KeyAndValue[]
     {
-        new KeyAndValue { Key = "type", Value = "" },
-        new KeyAndValue { Key = "description", Value = "" },
-        new KeyAndValue { Key = "name", Value = "" },
-        new KeyAndValue { Key = "color",Value = "" },
         new KeyAndValue { Key ="x_rotation", Value ="0" },
         new KeyAndValue { Key ="y_rotation", Value ="0" },
         new KeyAndValue { Key ="z_rotation", Value ="0" },
@@ -85,7 +81,7 @@ public abstract class Interactive : MonoBehaviour, IClickable
         // Populate identity fields exclusively from the profile SO
         if (profile != null)
         {
-            Meta["type"]        = profile.type;
+            Meta["type"]        = profile.category;
             Meta["description"] = profile.description;
             Meta["name"]        = profile.objectName;
             Meta["color"]       = profile.color;
