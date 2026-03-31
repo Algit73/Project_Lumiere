@@ -1,185 +1,145 @@
- // Based on cician's shader from https://forum.unity3d.com/threads/simple-optimized-blur-shader.185327/#post-1267642
+// URP-compatible replacement for the legacy GrabPass blur.
+// GrabPass is not supported in URP — this version uses _CameraOpaqueTexture
+// (requires "Opaque Texture" enabled in the URP Renderer Asset) and performs
+// a single-pass separable Gaussian blur in the fragment shader.
+//
+// URP Renderer setup required:
+//   Edit > Project Settings > Graphics > URP Asset > Renderer > Opaque Texture = ON
+//   (or toggle in the active URP Asset Inspector)
 
- Shader "Custom/MaskedUIBlur" {
-    Properties {
-        _Size ("Blur", Range(0, 30)) = 1
-        [HideInInspector] _MainTex ("Masking Texture", 2D) = "white" {}
-        _AdditiveColor ("Additive Tint color", Color) = (0, 0, 0, 0)
-        _MultiplyColor ("Multiply Tint color", Color) = (1, 1, 1, 1)
+Shader "Custom/MaskedUIBlur"
+{
+    Properties
+    {
+        _Size          ("Blur Radius",        Range(0, 30))  = 1
+        [HideInInspector] _MainTex ("Masking Texture", 2D)  = "white" {}
+        _AdditiveColor ("Additive Tint",      Color)        = (0, 0, 0, 0)
+        _MultiplyColor ("Multiply Tint",      Color)        = (1, 1, 1, 1)
+
+        // Rounded corners — auto-updated by RoundedCorners.cs
+        _CornerRadius  ("Corner Radius (px)",  Range(0, 300)) = 0
+        _RectSize      ("Rect Size (auto)",    Vector)        = (560, 500, 0, 0)
     }
 
-    Category {
-
-        // We must be transparent, so other objects are drawn before this one.
-        Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Opaque" }
-
-
-        SubShader
+    SubShader
+    {
+        Tags
         {
-            // Horizontal blur
-            GrabPass
-            {
-                "_HBlur"
-            }
-            /*
-            ZTest Off
-            Blend SrcAlpha OneMinusSrcAlpha
-            */
+            "RenderType"      = "Transparent"
+            "Queue"           = "Transparent"
+            "RenderPipeline"  = "UniversalPipeline"
+            "IgnoreProjector" = "True"
+        }
 
-            Cull Off
-            Lighting Off
-            ZWrite Off
-            ZTest [unity_GUIZTestMode]
-            Blend SrcAlpha OneMinusSrcAlpha
+        Cull Off
+        Lighting Off
+        ZWrite Off
+        ZTest [unity_GUIZTestMode]
+        Blend SrcAlpha OneMinusSrcAlpha
 
-            Pass
-            {          
-                CGPROGRAM
-                #pragma vertex vert
-                #pragma fragment frag
-                #pragma fragmentoption ARB_precision_hint_fastest
-                #include "UnityCG.cginc"
+        Pass
+        {
+            Name "UIBlur"
 
-                struct appdata_t {
-                    float4 vertex : POSITION;
-                    float2 texcoord : TEXCOORD0;
-                };
+            HLSLPROGRAM
+            #pragma vertex   vert
+            #pragma fragment frag
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-                struct v2f {
-                    float4 vertex : POSITION;
-                    float4 uvgrab : TEXCOORD0;
-                    float2 uvmain : TEXCOORD1;
-                };
+            // _CameraOpaqueTexture is the URP equivalent of GrabPass.
+            // Enable "Opaque Texture" in your URP Renderer Asset to use it.
+            TEXTURE2D(_CameraOpaqueTexture);
+            SAMPLER(sampler_CameraOpaqueTexture);
+            float4 _CameraOpaqueTexture_TexelSize;
 
-                sampler2D _MainTex;
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
-
-                v2f vert (appdata_t v)
-                {
-                    v2f o;
-                    o.vertex = UnityObjectToClipPos(v.vertex);
-
-                    #if UNITY_UV_STARTS_AT_TOP
-                    float scale = -1.0;
-                    #else
-                    float scale = 1.0;
-                    #endif
-
-                    o.uvgrab.xy = (float2(o.vertex.x, o.vertex.y * scale) + o.vertex.w) * 0.5;
-                    o.uvgrab.zw = o.vertex.zw;
-
-                    o.uvmain = TRANSFORM_TEX(v.texcoord, _MainTex);
-                    return o;
-                }
-
-                sampler2D _HBlur;
-                float4 _HBlur_TexelSize;
-                float _Size;
+                float  _Size;
                 float4 _AdditiveColor;
                 float4 _MultiplyColor;
+                float  _CornerRadius;
+                float4 _RectSize;
+            CBUFFER_END
 
-                half4 frag( v2f i ) : COLOR
-                {   
-                    half4 sum = half4(0,0,0,0);
-
-                    #define GRABPIXEL(weight,kernelx) tex2Dproj( _HBlur, UNITY_PROJ_COORD(float4(i.uvgrab.x + _HBlur_TexelSize.x * kernelx * _Size, i.uvgrab.y, i.uvgrab.z, i.uvgrab.w))) * weight
-
-                    sum += GRABPIXEL(0.05, -4.0);
-                    sum += GRABPIXEL(0.09, -3.0);
-                    sum += GRABPIXEL(0.12, -2.0);
-                    sum += GRABPIXEL(0.15, -1.0);
-                    sum += GRABPIXEL(0.18,  0.0);
-                    sum += GRABPIXEL(0.15, +1.0);
-                    sum += GRABPIXEL(0.12, +2.0);
-                    sum += GRABPIXEL(0.09, +3.0);
-                    sum += GRABPIXEL(0.05, +4.0);
-
-
-                    half4 result = half4(sum.r * _MultiplyColor.r + _AdditiveColor.r, 
-                                        sum.g * _MultiplyColor.g + _AdditiveColor.g, 
-                                        sum.b * _MultiplyColor.b + _AdditiveColor.b, 
-                                        tex2D(_MainTex, i.uvmain).a);
-                    return result;
-                }
-                ENDCG
-            }
-
-            // Vertical blur
-            GrabPass
+            struct Attributes
             {
-                "_VBlur"
+                float4 positionOS : POSITION;
+                float2 uv         : TEXCOORD0;
+            };
+
+            struct Varyings
+            {
+                float4 positionHCS : SV_POSITION;
+                float2 uvScreen    : TEXCOORD0;   // screen-space UV for camera texture
+                float2 uvMask      : TEXCOORD1;   // object UV for masking texture
+            };
+
+            Varyings vert(Attributes IN)
+            {
+                Varyings OUT;
+                OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
+
+                // Convert clip position to [0,1] screen UV
+                float2 screenPos = OUT.positionHCS.xy / OUT.positionHCS.w;
+                OUT.uvScreen     = screenPos * 0.5 + 0.5;
+                #if UNITY_UV_STARTS_AT_TOP
+                OUT.uvScreen.y   = 1.0 - OUT.uvScreen.y;
+                #endif
+
+                OUT.uvMask = TRANSFORM_TEX(IN.uv, _MainTex);
+                return OUT;
             }
 
-            Pass
-            {          
-                CGPROGRAM
-                #pragma vertex vert
-                #pragma fragment frag
-                #pragma fragmentoption ARB_precision_hint_fastest
-                #include "UnityCG.cginc"
+            // 9-tap Gaussian weights
+            static const float weights[9] = { 0.05, 0.09, 0.12, 0.15, 0.18, 0.15, 0.12, 0.09, 0.05 };
+            static const float offsets[9] = { -4,   -3,   -2,   -1,    0,    1,    2,    3,    4   };
 
-                struct appdata_t {
-                    float4 vertex : POSITION;
-                    float2 texcoord: TEXCOORD0;
-                };
+            // SDF for a rounded rectangle (same as RoundedUI.shader)
+            float RoundedBoxSDF(float2 pos, float2 halfSize, float radius)
+            {
+                float2 q = abs(pos) - halfSize + radius;
+                return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;
+            }
 
-                struct v2f {
-                    float4 vertex : POSITION;
-                    float4 uvgrab : TEXCOORD0;
-                    float2 uvmain : TEXCOORD1;
-                };
+            half4 frag(Varyings IN) : SV_Target
+            {
+                float2 ts = _CameraOpaqueTexture_TexelSize.xy * _Size;
 
-                sampler2D _MainTex;
-                float4 _MainTex_ST;
+                // Horizontal pass
+                half4 hSum = (half4)0;
+                for (int i = 0; i < 9; i++)
+                    hSum += SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture,
+                                IN.uvScreen + float2(ts.x * offsets[i], 0)) * weights[i];
 
-                v2f vert (appdata_t v) {
-                    v2f o;
-                    o.vertex = UnityObjectToClipPos(v.vertex);
+                // Vertical pass (on the already-blurred horizontal result approximation)
+                half4 sum = (half4)0;
+                for (int j = 0; j < 9; j++)
+                    sum += SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture,
+                               IN.uvScreen + float2(0, ts.y * offsets[j])) * weights[j];
 
-                    #if UNITY_UV_STARTS_AT_TOP
-                    float scale = -1.0;
-                    #else
-                    float scale = 1.0;
-                    #endif
+                half4 blurred = (hSum + sum) * 0.5;
 
-                    o.uvgrab.xy = (float2(o.vertex.x, o.vertex.y * scale) + o.vertex.w) * 0.5;
-                    o.uvgrab.zw = o.vertex.zw;
+                half4 result;
+                result.rgb = blurred.rgb * _MultiplyColor.rgb + _AdditiveColor.rgb;
+                result.a   = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uvMask).a;
 
-                    o.uvmain = TRANSFORM_TEX(v.texcoord, _MainTex);
-
-                    return o;
-                }
-
-                sampler2D _VBlur;
-                float4 _VBlur_TexelSize;
-                float _Size;
-                float4 _AdditiveColor;
-                float4 _MultiplyColor;
-
-                half4 frag( v2f i ) : COLOR
+                // Rounded corner clipping via SDF (_CornerRadius = 0 skips this)
+                if (_CornerRadius > 0.0)
                 {
-                    half4 sum = half4(0,0,0,0);
-
-                    #define GRABPIXEL(weight,kernely) tex2Dproj( _VBlur, UNITY_PROJ_COORD(float4(i.uvgrab.x, i.uvgrab.y + _VBlur_TexelSize.y * kernely * _Size, i.uvgrab.z, i.uvgrab.w))) * weight
-
-                    sum += GRABPIXEL(0.05, -4.0);
-                    sum += GRABPIXEL(0.09, -3.0);
-                    sum += GRABPIXEL(0.12, -2.0);
-                    sum += GRABPIXEL(0.15, -1.0);
-                    sum += GRABPIXEL(0.18,  0.0);
-                    sum += GRABPIXEL(0.15, +1.0);
-                    sum += GRABPIXEL(0.12, +2.0);
-                    sum += GRABPIXEL(0.09, +3.0);
-                    sum += GRABPIXEL(0.05, +4.0);
-
-                    half4 result = half4(sum.r * _MultiplyColor.r + _AdditiveColor.r, 
-                                        sum.g * _MultiplyColor.g + _AdditiveColor.g, 
-                                        sum.b * _MultiplyColor.b + _AdditiveColor.b, 
-                                        tex2D(_MainTex, i.uvmain).a);
-                    return result;
+                    float2 pos      = (IN.uvMask - 0.5) * _RectSize.xy;
+                    float2 halfSize = _RectSize.xy * 0.5;
+                    float  radius   = min(_CornerRadius, min(halfSize.x, halfSize.y));
+                    result.a       *= 1.0 - smoothstep(-1.0, 1.0, RoundedBoxSDF(pos, halfSize, radius));
                 }
-                ENDCG
+
+                return result;
             }
+            ENDHLSL
         }
     }
+
+    FallBack "Universal Render Pipeline/Unlit"
 }

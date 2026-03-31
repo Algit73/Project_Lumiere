@@ -144,7 +144,6 @@ public class TaskRandomizer : MonoBehaviour
             t != null &&
             !usedThisPass.Contains(t) &&
             (allowAll || character.eligibleTaskTypes.Contains(t.taskType)) &&
-            t.objectPool != null && t.objectPool.Count > 0 &&
             t.difficulty >= character.minDifficulty &&
             t.difficulty <= character.maxDifficulty
         ).ToList();

@@ -10,18 +10,19 @@ public class Lumier_MainController : MonoBehaviour
     public Color glowColor = Color.yellow;
     public float glowDuration = 0.5f;
     [SerializeField] private Button lumiere_button;
-    [SerializeField] private Button lumiere_story_button;
-    [SerializeField] private Button lumiere_chat_button;
-    [SerializeField] private Button lumiere_word_button;
-    [SerializeField] private Button lumiere_find_button;
 
-    [SerializeField] private GameObject lumiere_menu;
-    [SerializeField] public  Image hud_selected_objects;
-    [SerializeField] private Button lumiere_menu_close;
+    [Header("Task Menu")]
+    [Tooltip("Assign the LumiereMenuOverlay GameObject (created by Tools > Build Lumiere Task Menu).")]
+    [SerializeField] private TaskMenuController taskMenu;
 
+    [Header("HUD")]
+    [SerializeField] public Image hud_selected_objects;
+
+    [Header("Legacy Scene Controllers (keep assigned)")]
     [SerializeField] private GameObject lumiere_story;
     [SerializeField] private GameObject lumiere_word;
     [SerializeField] private GameObject lumiere_find;
+
     private SinusoidalGlowEffect sgEffect;
 
 
@@ -40,79 +41,73 @@ public class Lumier_MainController : MonoBehaviour
             Debug.LogWarning("HUD_Selected_Objects Image is not assigned/found. HUD show/hide will be skipped.");
     }
 
-    // Start is called before the first frame update}
     // Start is called before the first frame update
     void Start()
     {
-        if (lumiere_button == null || lumiere_menu_close == null || lumiere_menu == null ||
-            lumiere_story_button == null || lumiere_word_button == null || lumiere_find_button == null)
+        if (lumiere_button == null)
         {
-            Debug.LogError("Lumier_MainController: Assign all Lumiere buttons and menu references in Inspector.");
+            Debug.LogError("Lumier_MainController: Assign lumiere_button in the Inspector.");
             return;
         }
 
-        /// hiding on display menues
-        hide_lumiere_menu();
         hide_hud();
 
-        /// initializing lumiere glow effect
+        // Glow effect on the main button
         lumiere_glow_effect_init(lumiere_button);
 
-        /// adding listeners to buttons
-        lumiere_button.onClick.AddListener(OpenLumiereMenu);
-        lumiere_menu_close.onClick.AddListener(CloseLumiereMenu);
+        // Open the task menu when the main button is pressed
+        lumiere_button.onClick.AddListener(() =>
+        {
+            if (taskMenu != null)
+                taskMenu.Open();
+            else
+                Debug.LogWarning("Lumier_MainController: taskMenu is not assigned. " +
+                                 "Run Tools > Build Lumiere Task Menu and assign the result.");
+        });
 
-        Story_Telling story_telling = lumiere_story.GetComponent<Story_Telling>();
-        
-        Word_Exercise word_exercise = lumiere_word.GetComponent<Word_Exercise>();
+        // Subscribe to task-type selection from the new menu
+        if (taskMenu != null)
+        {
+            taskMenu.OnTaskSelected += HandleTaskSelected;
+            taskMenu.OnMenuClosed   += () => { if (sgEffect != null) sgEffect.StartGlow(); };
+        }
+    }
 
-        Finding_Items finding_items = lumiere_find.GetComponent<Finding_Items>();
+    private void HandleTaskSelected(TaskType type)
+    {
+        show_hud();
+        if (sgEffect != null) sgEffect.StopGlow();
 
-        lumiere_story_button.onClick.AddListener(() => 
-        { 
-            hide_lumiere_menu();
-            show_hud();
-            story_telling.on_lumiere_story_clicked();
-        } );
-        
-        lumiere_word_button.onClick.AddListener(() => 
-        { 
-            hide_lumiere_menu();
-            show_hud();
-            word_exercise.on_lumiere_word_clicked();
-        } );
+        switch (type)
+        {
+            case TaskType.Story:
+                if (lumiere_story != null)
+                    lumiere_story.GetComponent<Story_Telling>()?.on_lumiere_story_clicked();
+                break;
 
-        lumiere_find_button.onClick.AddListener(() => 
-        { 
-            hide_lumiere_menu();
-            show_hud();
-            finding_items.on_lumiere_find_clicked();
-        } );
+            case TaskType.Name:
+                if (lumiere_word != null)
+                    lumiere_word.GetComponent<Word_Exercise>()?.on_lumiere_word_clicked();
+                break;
 
+            case TaskType.Find:
+                if (lumiere_find != null)
+                    lumiere_find.GetComponent<Finding_Items>()?.on_lumiere_find_clicked();
+                break;
 
-        
+            case TaskType.Manipulate:
+            case TaskType.Sort:
+            case TaskType.Match:
+                Debug.Log($"[Lumier_MainController] Task type '{type}' selected — handler not yet implemented.");
+                break;
+        }
     }
 
     private void hide_lumiere_menu()
     {
-        CloseLumiereMenu();
+        if (taskMenu != null && taskMenu.IsOpen) taskMenu.Close();
     }
 
-    private void OpenLumiereMenu()
-    {
-        if (lumiere_menu != null) lumiere_menu.SetActive(true);
-        if (lumiere_story_button != null) lumiere_story_button.gameObject.SetActive(true);
-        if (lumiere_word_button != null) lumiere_word_button.gameObject.SetActive(true);
-        if (lumiere_find_button != null) lumiere_find_button.gameObject.SetActive(true);
-
-        if (sgEffect != null) sgEffect.StopGlow();
-    }
-
-    private void CloseLumiereMenu()
-    {
-        if (lumiere_menu != null) lumiere_menu.SetActive(false);
-        if (sgEffect != null) sgEffect.StartGlow();
-    }
 
     public void hide_hud()
     {if (hud_selected_objects !=null) hud_selected_objects.gameObject.SetActive(false);}

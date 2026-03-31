@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9540aec34e4a1204099caf4d9308c36a, type: 3}
+  m_Name: simple_story_task
+  m_EditorClassIdentifier: 
+  taskID: task_find_sample_01
+  taskType: 0
+  difficulty: 1
+  objectPool: []
+  promptTemplates:
+  - Can you find the {target}?
+  - Where is the {target}?
+  - Point to the {target}!
+  cueHierarchy: 0000000001000000020000000300000004000000
+  successCriteria:
+    type: 0
+    targetObjectID: sample_object
+    requiredCount: 1
+    targetCategory: 
+  timeLimit: 30
+  feedbackConfig:
+    successAudio: {fileID: 0}
+    failAudio: {fileID: 0}
+    successVFX: {fileID: 0}
+    failVFX: {fileID: 0}
+    successColor: {r: 0, g: 1, b: 0, a: 1}
+    failColor: {r: 1, g: 0, b: 0, a: 1}
