@@ -60,6 +60,9 @@ public class NPCRouteWander : MonoBehaviour
     private bool  _waiting;
     private float _waitTimer;
 
+    // External pause flag (set via Pause() / Resume() for dialogue/cutscene use)
+    private bool _paused;
+
     // ── Unity ──────────────────────────────────────────────────────────────────
 
     private void Awake()
@@ -79,9 +82,29 @@ public class NPCRouteWander : MonoBehaviour
         PickNewRoute();
     }
 
+    // ── Public API ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Externally pauses NPC movement (e.g. during dialogue or camera focus).
+    /// The NPC will stand idle until Resume() is called.
+    /// </summary>
+    public void Pause()  { _paused = true;  SendIdle(); }
+
+    /// <summary>Resumes movement after a Pause() call.</summary>
+    public void Resume() { _paused = false; }
+
+    // ── Unity ──────────────────────────────────────────────────────────────────
+
     private void Update()
     {
         if (_currentRoute.Count == 0) return;
+
+        // ── External pause (dialogue / cutscene) ──────────────────────────────
+        if (_paused)
+        {
+            SendIdle();
+            return;
+        }
 
         // ── Pause during task ─────────────────────────────────────────────────
         if (pauseDuringTask && IsTaskActive())

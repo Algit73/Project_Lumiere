@@ -56,6 +56,18 @@ public class OpenAITTSManager : MonoBehaviour
         _ = SpeakAsync(text);
     }
 
+    /// <summary>
+    /// Changes the speech rate for all subsequent Speak() calls.
+    /// Speed is clamped to the OpenAI-supported range [0.25, 4.0].
+    /// </summary>
+    public void SetSpeed(float newSpeed)
+    {
+        speed = Mathf.Clamp(newSpeed, 0.25f, 4f);
+    }
+
+    /// <summary>True while the AudioSource is playing TTS audio.</summary>
+    public bool IsPlaying => audioSource != null && audioSource.isPlaying;
+
     public async Task SpeakAsync(string text)
     {
         if (string.IsNullOrWhiteSpace(text))

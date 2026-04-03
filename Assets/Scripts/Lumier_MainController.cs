@@ -15,6 +15,10 @@ public class Lumier_MainController : MonoBehaviour
     [Tooltip("Assign the LumiereMenuOverlay GameObject (created by Tools > Build Lumiere Task Menu).")]
     [SerializeField] private TaskMenuController taskMenu;
 
+    [Header("Find Object Task")]
+    [Tooltip("Handles the Find Object dialogue sequence. Auto-adds if missing.")]
+    [SerializeField] private FindObjectTask findObjectTask;
+
     [Header("HUD")]
     [SerializeField] public Image hud_selected_objects;
 
@@ -28,6 +32,10 @@ public class Lumier_MainController : MonoBehaviour
 
     void Awake()
     {
+        // Auto-create FindObjectTask on this GameObject if not assigned
+        if (findObjectTask == null)
+            findObjectTask = GetComponent<FindObjectTask>() ?? gameObject.AddComponent<FindObjectTask>();
+
         if (hud_selected_objects == null)
         {
             var hud = GameObject.Find("HUD_Selected_Objects");
@@ -91,8 +99,7 @@ public class Lumier_MainController : MonoBehaviour
                 break;
 
             case TaskType.Find:
-                if (lumiere_find != null)
-                    lumiere_find.GetComponent<Finding_Items>()?.on_lumiere_find_clicked();
+                findObjectTask?.Begin();
                 break;
 
             case TaskType.Manipulate:

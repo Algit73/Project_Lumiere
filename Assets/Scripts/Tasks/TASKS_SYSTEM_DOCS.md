@@ -272,6 +272,9 @@ Key inspector fields: `waypoints`, `loopMode`, `runBetweenWaypoints`, `arrivalTh
 
 Pauses automatically (stands idle) when `CharacterAgent.CurrentTask` is Running/Evaluating.
 
+New `Pause()` / `Resume()` public methods allow external code (e.g. `FindObjectTask`) to
+freeze the NPC independently of the task system.
+
 ---
 
 ### 10. `NPCRouteWander.cs` — Random Subpath Walker *(recommended for cats / free NPCs)*
@@ -308,6 +311,9 @@ Treats the waypoint list as a **circular loop**. On each trip it picks two rando
 
 **Gizmos:** In Play mode, the full loop is drawn in grey, the active sub-route in yellow, and the current target in green.
 
+New `Pause()` / `Resume()` public methods allow external code (e.g. `FindObjectTask`) to
+freeze/unfreeze the NPC independently of the task `pauseDuringTask` flag.
+
 ---
 
 ### 11. `NPCWander.cs` — NavMesh Random Wander *(kept but not recommended for Cat_03)*
@@ -319,7 +325,183 @@ Stuck detection: if the character moves less than `stuckDistanceThreshold` metre
 
 ---
 
-## How the Systems Connect at Runtime
+## Find Object Dialogue System
+
+Files: `Assets/Scripts/Tasks/` and `Assets/Scripts/UI/`
+
+### Overview
+
+When the player selects **Find Objects** from the Lumiere task menu, the following
+sequence runs:
+
+```
+Lumier_MainController.HandleTaskSelected(Find)
+    │
+    ▼
+FindObjectTask.Begin()
+    ├─ PickRandomNPC()              → selects a random CharacterAgent from the scene
+    ├─ PauseNPC()                  → calls Pause() on NPCRouteWander / NPCPatrol,
+    │                                 disables NPCWander component
+    ├─ ComputeCameraPose()         → uses Collider.bounds to frame the character:
+    │    • ratio = bounds.y / bounds.x
+    │    • ratio > 1 (humanoid)  → frame upper half (waist → head)
+    │    • ratio ≤ 1 (animal)    → frame full bounding box
+    │    • distance so region fills screenFillFraction (default 60 %) of screen
+    │    • camera placed behind NPC, looking at focus point
+    ├─ ARDialogueMode.EnterDialogueMode()
+    │    • fade to black
+    │    • disable ARCameraBackground + TrackedPoseDriver
+    │    • snap camera to computed pose
+    │    • fade back in
+    ├─ SpawnBubble()               → creates SpeechBubbleUI (world-space Canvas)
+    │                                 anchored to CharacterAgent.iconAnchor
+    └─ Show line[0], show DialogueNavigationUI ◀ ▶
+
+Player taps ▶ (Next):
+    FindObjectTask.OnNext()
+    ├─ lineIndex++
+    ├─ SpeechBubbleUI.Show(line)   → updates text, fires TTS
+    └─ DialogueNavigationUI.RefreshButtons()
+
+Last ▶ press (or End()):
+    FindObjectTask.FinishSession()
+    ├─ SpeechBubbleUI.Hide()
+    ├─ DialogueNavigationUI.Hide()
+    ├─ ResumeNPC()
+    └─ ARDialogueMode.ExitDialogueMode()
+         • fade to black
+         • re-enable ARCameraBackground + TrackedPoseDriver
+         • snap camera back to saved pose
+         • fade back in
+```
+
+---
+
+### New Components (Find Object Dialogue System)
+
+#### `DialogueLine.cs` — Data Struct
+
+A plain `[Serializable]` struct. Stores one dialogue exchange.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `speakerName` | string | Shown in the bubble header |
+| `text` | string | Displayed in the bubble body; read aloud via TTS |
+
+#### `FindObjectDialogueData.cs` — ScriptableObject
+
+```
+Right-click in Project → Create → Lumiere → Find Object Dialogue
+```
+
+Holds an ordered `List<DialogueLine>`. When the list is empty, `GetLines()` returns
+built-in hardcoded fallback lines so the task works without any asset configuration.
+
+Assign a custom asset to `FindObjectTask.dialogueData` in the Inspector to use
+per-character dialogue.
+
+#### `ARDialogueMode.cs` — AR↔3D Transition Controller (Singleton MonoBehaviour)
+
+Manages the "pin" approach: temporarily freezing AR tracking to allow free camera
+movement during dialogue.
+
+| Method | Effect |
+|--------|--------|
+| `EnterDialogueMode(pos, rot, onComplete)` | Fade → disable AR components → snap camera → fade back |
+| `ExitDialogueMode(onComplete)` | Fade → re-enable AR components → restore saved pose → fade back |
+| `IsInDialogueMode` | Property: true while in dialogue |
+
+Auto-creates a fullscreen `ScreenFadeCanvas` child on `Awake()`.
+Finds `ARCameraBackground` and `TrackedPoseDriver` by `GetComponent(string)` so it
+compiles without hard AR Foundation references.
+
+Inspector:
+
+| Field | Default | Purpose |
+|-------|---------|---------|
+| `fadeDuration` | 0.35 s | Black-screen fade time |
+| `moveDuration` | 0.8 s | (reserved for future smooth tween) |
+| `fadeColor` | Black | Screen-fade overlay color |
+
+#### `SpeechBubbleUI.cs` — World-Space Speech Bubble
+
+A `Canvas (World Space)` that auto-builds its own UI tree on `Awake()`.
+
+**Billboard:** `LateUpdate()` keeps the bubble facing `Camera.main` (Y-axis rotation only).
+
+| Method | Effect |
+|--------|--------|
+| `Show(DialogueLine)` | Sets text, fires TTS |
+| `Hide()` | Deactivates the GameObject |
+
+Embedded controls:
+- **Speaker icon button** (🔊): replays TTS for the current line.
+- **Speed slider** (0.5–2.0): calls `TTSManager.Manager.SetSpeechSpeed(value)` on change.
+
+Inspector:
+
+| Field | Default | Purpose |
+|-------|---------|---------|
+| `bubbleWidth` | 1.4 wu | World-unit width of the bubble panel |
+| `bubbleHeight` | 0.65 wu | World-unit height |
+| `panelColor` | dark blue | Background tint |
+| `cornerRadius` | 18 px | RoundedCorners radius |
+| `verticalOffset` | 0.1 wu | Up-shift from anchor point |
+
+#### `DialogueNavigationUI.cs` — Screen-Space ◀ ▶ Arrows
+
+A `Canvas (ScreenSpaceOverlay)` that auto-builds two arrow buttons near the screen bottom.
+
+| Method | Effect |
+|--------|--------|
+| `Show(currentIndex, totalCount)` | Activates panel; disables first/last button as appropriate |
+| `RefreshButtons(index, total)` | Updates enabled state without toggling visibility |
+| `Hide()` | Deactivates the panel |
+| `OnPrevious` | Action delegate — wired by FindObjectTask |
+| `OnNext` | Action delegate — wired by FindObjectTask |
+
+Inspector:
+
+| Field | Default | Purpose |
+|-------|---------|---------|
+| `buttonSize` | 72 × 72 px | Arrow button size |
+| `bottomOffset` | 120 px | Distance above screen bottom |
+| `sideOffset` | 220 px | Distance from screen centre |
+
+#### `FindObjectTask.cs` — Dialogue Session Orchestrator
+
+Add to the same GameObject as `Lumier_MainController` (or any persistent object).
+If not assigned in the Inspector, `Lumier_MainController.Awake()` auto-creates it.
+
+| Method | Called by |
+|--------|-----------|
+| `Begin()` | `Lumier_MainController.HandleTaskSelected(TaskType.Find)` |
+| `End()` | External cancel (e.g. player taps outside) |
+
+Key Inspector fields:
+
+| Field | Default | Purpose |
+|-------|---------|---------|
+| `dialogueData` | null | Custom `FindObjectDialogueData` asset. Null = use fallback lines |
+| `screenFillFraction` | 0.60 | Fraction of screen height filled by NPC |
+| `humanoidRatioThreshold` | 1.0 | bounds.y/bounds.x above this → upper-half framing |
+| `minCameraDistance` | 0.5 m | Safety clamp |
+| `maxCameraDistance` | 8 m | Safety clamp |
+| `bubbleAboveHead` | 0.25 m | Offset above collider top for bubble anchor |
+
+---
+
+### TTS Speed Control (updated)
+
+`OpenAITTSManager` gains:
+- `SetSpeed(float)` — clamps to `[0.25, 4.0]` and applies to next `SpeakAsync()`.
+- `IsPlaying` — `true` while `AudioSource.isPlaying`.
+
+`TTSManager` gains:
+- `SetSpeechSpeed(float)` — passthrough to `OpenAITTSManager.SetSpeed()`.
+- `IsPlaying` — passthrough property.
+
+---
 
 ```
 Scene Start

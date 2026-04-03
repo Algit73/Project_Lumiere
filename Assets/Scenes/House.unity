@@ -367,29 +367,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4673ca403f08da34dbffac474c27dfc1, type: 3}
   m_PrefabInstance: {fileID: 10055104}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &11925307 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 704162477644785709, guid: 598b32c190977d346aac1f506bed7af3, type: 3}
-  m_PrefabInstance: {fileID: 831696626}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &11925308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 11925307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 009daac89c780c644909bd02c08de9b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterID: ThomasHouse
-  eligibleTaskTypes: 0000000001000000
-  minDifficulty: 1
-  maxDifficulty: 3
-  iconAnchor: {fileID: 0}
-  iconPrefab: {fileID: 0}
 --- !u!4 &11925309 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3409178932420272133, guid: 598b32c190977d346aac1f506bed7af3, type: 3}
@@ -1361,6 +1338,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 520858133245269419, guid: 03a3ed20d7775f14dbc731ebbf31cee7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1578848780}
+    - targetCorrespondingSourceObject: {fileID: 520858133245269419, guid: 03a3ed20d7775f14dbc731ebbf31cee7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1578848781}
   m_SourcePrefab: {fileID: 100100000, guid: 03a3ed20d7775f14dbc731ebbf31cee7, type: 3}
 --- !u!1001 &92846509
 PrefabInstance:
@@ -4620,10 +4600,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 859241885938180835, guid: 4443db589505ae441b80c4216c4e7d77, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 456159069}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4443db589505ae441b80c4216c4e7d77, type: 3}
 --- !u!1 &299496405 stripped
 GameObject:
@@ -11766,29 +11743,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 34eff0107b84f0641b7e1687246dbd61, type: 3}
   m_PrefabInstance: {fileID: 454243786}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &456159067 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 859241885938180835, guid: 4443db589505ae441b80c4216c4e7d77, type: 3}
-  m_PrefabInstance: {fileID: 298391191}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &456159069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 456159067}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 009daac89c780c644909bd02c08de9b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterID: 
-  eligibleTaskTypes: 
-  minDifficulty: 1
-  maxDifficulty: 3
-  iconAnchor: {fileID: 0}
-  iconPrefab: {fileID: 0}
 --- !u!1 &462976234
 GameObject:
   m_ObjectHideFlags: 0
@@ -22602,10 +22556,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3409178932420272133, guid: 598b32c190977d346aac1f506bed7af3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 746783521}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 704162477644785709, guid: 598b32c190977d346aac1f506bed7af3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 11925308}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 598b32c190977d346aac1f506bed7af3, type: 3}
 --- !u!1 &834803349
 GameObject:
@@ -40139,6 +40090,24 @@ MonoBehaviour:
   minWaitAtDestination: 2
   maxWaitAtDestination: 5
   pauseDuringTask: 1
+--- !u!114 &1578848781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578848771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009daac89c780c644909bd02c08de9b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterID: 
+  eligibleTaskTypes: 00000000
+  minDifficulty: 1
+  maxDifficulty: 3
+  iconAnchor: {fileID: 0}
+  iconPrefab: {fileID: 0}
 --- !u!1 &1579225023 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 62c94bc2daca8d9438d7217e7b7eec63, type: 3}
@@ -42161,6 +42130,7 @@ MonoBehaviour:
   glowDuration: 0.5
   lumiere_button: {fileID: 1700600002}
   taskMenu: {fileID: 411406277}
+  findObjectTask: {fileID: 0}
   hud_selected_objects: {fileID: 636367630}
   lumiere_story: {fileID: 1572408534}
   lumiere_word: {fileID: 2136645176}
@@ -43395,39 +43365,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2519462374048377911, guid: 66087e21317661d4d9adb3c85b054a92, type: 3}
       insertIndex: -1
       addedObject: {fileID: 344443910}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1373929434282590353, guid: 66087e21317661d4d9adb3c85b054a92, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1756782816}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66087e21317661d4d9adb3c85b054a92, type: 3}
---- !u!1 &1756782814 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1373929434282590353, guid: 66087e21317661d4d9adb3c85b054a92, type: 3}
-  m_PrefabInstance: {fileID: 1756782813}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1756782815 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2519462374048377911, guid: 66087e21317661d4d9adb3c85b054a92, type: 3}
   m_PrefabInstance: {fileID: 1756782813}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1756782816
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1756782814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 009daac89c780c644909bd02c08de9b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterID: SophieHouse
-  eligibleTaskTypes: 0000000001000000
-  minDifficulty: 1
-  maxDifficulty: 3
-  iconAnchor: {fileID: 0}
-  iconPrefab: {fileID: 0}
 --- !u!1 &1757888512
 GameObject:
   m_ObjectHideFlags: 0

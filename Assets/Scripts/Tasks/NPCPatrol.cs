@@ -45,15 +45,36 @@ public class NPCPatrol : MonoBehaviour
     private float _waitTimer     = 0f;
     private bool  _waiting       = false;
 
+    // External pause flag (set via Pause() / Resume() for dialogue/cutscene use)
+    private bool _paused;
+
     private void Awake()
     {
         _mover = GetComponent<CharacterMover>();
         _agent = GetComponent<CharacterAgent>();  // may be null
     }
 
+    // ── Public API ─────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Externally pauses NPC movement (e.g. during dialogue or camera focus).
+    /// The NPC will stand idle until Resume() is called.
+    /// </summary>
+    public void Pause()  { _paused = true;  SendInputToMover(Vector2.zero, ForwardLookTarget(), false, false); }
+
+    /// <summary>Resumes movement after a Pause() call.</summary>
+    public void Resume() { _paused = false; }
+
     private void Update()
     {
         if (waypoints == null || waypoints.Count == 0) return;
+
+        // External pause (dialogue / cutscene)
+        if (_paused)
+        {
+            SendInputToMover(Vector2.zero, ForwardLookTarget(), false, false);
+            return;
+        }
 
         // Pause if a task is active and option is on
         if (pauseDuringTask && IsTaskActive())

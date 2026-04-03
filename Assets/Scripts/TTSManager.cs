@@ -45,6 +45,28 @@ public class TTSManager : MonoBehaviour
         CacheProviders();
     }
 
+    // ── Public API ────────────────────────────────────────────────────────────
+
+    /// <summary>Sets speech playback speed on the underlying OpenAI TTS provider.</summary>
+    /// <param name="newSpeed">Clamped to [0.25, 4.0].</param>
+    public void SetSpeechSpeed(float newSpeed)
+    {
+        if (openAiTts == null) CacheProviders();
+        var openAi = GetComponent<OpenAITTSManager>() ?? openAiTts;
+        openAi?.SetSpeed(newSpeed);
+    }
+
+    /// <summary>True while TTS audio is actively playing.</summary>
+    public bool IsPlaying
+    {
+        get
+        {
+            if (openAiTts == null) CacheProviders();
+            var openAi = GetComponent<OpenAITTSManager>() ?? openAiTts;
+            return openAi != null && openAi.IsPlaying;
+        }
+    }
+
     // Public method to trigger speech
     public void Speak(string dialogue)
     {

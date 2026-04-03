@@ -5,10 +5,9 @@ using UnityEngine;
 using OpenAI;
 using OpenAI.Assistants;
 
-using NUnit.Framework;
 using OpenAI.Models;
 using OpenAI.Chat;
-using Mono.Cecil.Cil;
+// using Mono.Cecil.Cil;
 using System.Threading.Tasks;
 using System.IO;
 // using UnityEngine;
@@ -124,7 +123,7 @@ public class OpenAIBasics //: MonoBehaviour
 
     public async Task<string> llm_do_task(string system_prompt)
     {
-        Assert.IsNotNull(api.ChatEndpoint);
+        Debug.Assert(api.ChatEndpoint != null);
         var messages = new List<Message>
         {new Message(Role.System, system_prompt)};
 
@@ -132,9 +131,9 @@ public class OpenAIBasics //: MonoBehaviour
         // var chatRequest = new ChatRequest(messages, GPT4_TURBO_MODEL, temperature:1);
         var response = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
         
-        Assert.IsNotNull(response);
-        Assert.IsNotNull(response.Choices);
-        Assert.IsNotEmpty(response.Choices);
+        Debug.Assert(response != null);
+        Debug.Assert(response.Choices != null);
+        Debug.Assert(response.Choices.Count > 0);
 
         var choice = response.Choices[0];    
         Debug.Log($"[{choice.Index}] {choice.Message.Role}: {choice} | Finish Reason: {choice.FinishReason}");
@@ -147,7 +146,7 @@ public class OpenAIBasics //: MonoBehaviour
 
     async void chat_classic()
     {
-        Assert.IsNotNull(api.ChatEndpoint);
+        Debug.Assert(api.ChatEndpoint != null);
         var messages = new List<Message>
             {
                 new Message(Role.System, "You are a helpful assistant."),
@@ -157,9 +156,9 @@ public class OpenAIBasics //: MonoBehaviour
             };
             var chatRequest = new ChatRequest(messages, "gpt-4-1106-preview");
             var response = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Choices);
-            Assert.IsNotEmpty(response.Choices);
+            Debug.Assert(response != null);
+            Debug.Assert(response.Choices != null);
+            Debug.Assert(response.Choices.Count > 0);
 
             foreach (var choice in response.Choices)
             {
