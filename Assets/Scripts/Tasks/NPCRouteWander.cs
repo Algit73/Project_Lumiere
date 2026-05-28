@@ -36,6 +36,36 @@ public class NPCRouteWander : MonoBehaviour
     [Tooltip("Distance at which a waypoint is considered reached.")]
     public float arrivalThreshold = 0.4f;
 
+    [Header("Obstacle Avoidance")]
+    [Tooltip("If true, the NPC will probe ahead and temporarily steer around blocking colliders.")]
+    public bool avoidObstacles = true;
+
+    [Tooltip("Layers treated as blocking obstacles during route movement.")]
+    public LayerMask obstacleLayers = Physics.DefaultRaycastLayers;
+
+    [Tooltip("How far ahead to probe for blocking colliders.")]
+    public float obstacleCheckDistance = 0.9f;
+
+    [Tooltip("How far to the side the NPC probes before choosing a detour.")]
+    public float obstacleSideOffset = 0.35f;
+
+    [Tooltip("How far the NPC rotates its desired direction when trying left/right detours.")]
+    [Range(10f, 85f)]
+    public float avoidanceTurnAngle = 40f;
+
+    [Tooltip("How long the NPC keeps a chosen avoidance direction before re-evaluating.")]
+    public float avoidanceHoldTime = 0.35f;
+
+    [Tooltip("If the target is far off the current facing direction, rotate first instead of walking in a wide arc.")]
+    [Range(0f, 180f)]
+    public float turnInPlaceAngle = 35f;
+
+    [Tooltip("How often to check whether the NPC is making progress toward its current waypoint.")]
+    public float stuckCheckInterval = 0.75f;
+
+    [Tooltip("Minimum movement required during a stuck check before the NPC tries to recover.")]
+    public float stuckDistanceThreshold = 0.12f;
+
     [Header("Waiting")]
     [Tooltip("Brief pause at each intermediate waypoint (seconds).")]
     public float waitAtWaypoint = 0.5f;
@@ -53,12 +83,17 @@ public class NPCRouteWander : MonoBehaviour
     // ── Private ────────────────────────────────────────────────────────────────
     private CharacterMover _mover;
     private CharacterAgent _characterAgent;  // optional
+    private CharacterController _controller;
 
     // The computed sub-path for the current trip (subset of waypoints in order)
     private readonly List<Transform> _currentRoute = new List<Transform>();
     private int   _routeIndex;   // which point in _currentRoute we're heading to
     private bool  _waiting;
     private float _waitTimer;
+    private Vector3 _avoidDirection;
+    private float _avoidTimer;
+    private Vector3 _lastProgressPosition;
+    private float _stuckTimer;
 
     // External pause flag (set via Pause() / Resume() for dialogue/cutscene use)
     private bool _paused;
@@ -69,6 +104,7 @@ public class NPCRouteWander : MonoBehaviour
     {
         _mover          = GetComponent<CharacterMover>();
         _characterAgent = GetComponent<CharacterAgent>();
+        _controller     = GetComponent<CharacterController>();
     }
 
     private void Start()
@@ -80,6 +116,7 @@ public class NPCRouteWander : MonoBehaviour
             return;
         }
         PickNewRoute();
+        _lastProgressPosition = transform.position;
     }
 
     // ── Public API ─────────────────────────────────────────────────────────────
@@ -97,6 +134,8 @@ public class NPCRouteWander : MonoBehaviour
 
     private void Update()
     {
+        _avoidTimer = Mathf.Max(0f, _avoidTimer - Time.deltaTime);
+
         if (_currentRoute.Count == 0) return;
 
         // ── External pause (dialogue / cutscene) ──────────────────────────────
@@ -134,6 +173,7 @@ public class NPCRouteWander : MonoBehaviour
 
         Vector3 toTarget = target.position - transform.position;
         toTarget.y = 0f;
+        bool noJump = false;
 
         if (toTarget.magnitude <= arrivalThreshold)
         {
@@ -148,12 +188,23 @@ public class NPCRouteWander : MonoBehaviour
             return;
         }
 
-        Vector3 localDir   = transform.InverseTransformDirection(toTarget.normalized);
+        Vector3 moveDirection = ResolveMoveDirection(toTarget.normalized);
+        float turnAngle = Vector3.Angle(transform.forward, moveDirection);
+        if (turnAngle > turnInPlaceAngle)
+        {
+            TrackProgress(false);
+            Vector2 zeroAxis = Vector2.zero;
+            Vector3 turnLookTarget = transform.position + new Vector3(moveDirection.x, 0f, moveDirection.z);
+            _mover.SetInput(in zeroAxis, in turnLookTarget, in runBetweenWaypoints, in noJump);
+            return;
+        }
+
+        Vector3 localDir   = transform.InverseTransformDirection(moveDirection);
         Vector2 axis       = new Vector2(localDir.x, localDir.z);
-        Vector3 lookTarget = new Vector3(target.position.x, transform.position.y, target.position.z);
-        bool    noJump     = false;
+        Vector3 lookTarget = transform.position + new Vector3(moveDirection.x, 0f, moveDirection.z);
 
         _mover.SetInput(in axis, in lookTarget, in runBetweenWaypoints, in noJump);
+        TrackProgress(true);
     }
 
     // ── Private helpers ────────────────────────────────────────────────────────
@@ -162,8 +213,7 @@ public class NPCRouteWander : MonoBehaviour
     {
         int count = waypoints.Count;
 
-        // Pick a random start and end that are different
-        int startIdx = Random.Range(0, count);
+        int startIdx = FindNearestWaypointIndex();
         int endIdx;
         do { endIdx = Random.Range(0, count); }
         while (endIdx == startIdx);
@@ -180,6 +230,10 @@ public class NPCRouteWander : MonoBehaviour
 
         _routeIndex = 0;
         _waiting    = false;
+        _avoidDirection = Vector3.zero;
+        _avoidTimer = 0f;
+        _stuckTimer = 0f;
+        _lastProgressPosition = transform.position;
 
         Debug.Log($"[NPCRouteWander] '{name}' new route: " +
                   $"{waypoints[startIdx].name} → {waypoints[endIdx].name} " +
@@ -195,8 +249,182 @@ public class NPCRouteWander : MonoBehaviour
     {
         Vector2 zero = Vector2.zero;
         bool no = false;
+        _avoidDirection = Vector3.zero;
+        _avoidTimer = 0f;
+        _stuckTimer = 0f;
+        _lastProgressPosition = transform.position;
         Vector3 fwd = ForwardLookTarget();
         _mover.SetInput(in zero, in fwd, in no, in no);
+    }
+
+    private int FindNearestWaypointIndex()
+    {
+        int nearestIndex = 0;
+        float bestSqrDistance = float.PositiveInfinity;
+
+        for (int i = 0; i < waypoints.Count; i++)
+        {
+            Transform waypoint = waypoints[i];
+            if (waypoint == null)
+                continue;
+
+            Vector3 delta = waypoint.position - transform.position;
+            delta.y = 0f;
+            float sqrDistance = delta.sqrMagnitude;
+            if (sqrDistance < bestSqrDistance)
+            {
+                bestSqrDistance = sqrDistance;
+                nearestIndex = i;
+            }
+        }
+
+        return nearestIndex;
+    }
+
+    private void TrackProgress(bool isTryingToMove)
+    {
+        if (!isTryingToMove)
+        {
+            _stuckTimer = 0f;
+            _lastProgressPosition = transform.position;
+            return;
+        }
+
+        _stuckTimer += Time.deltaTime;
+        if (_stuckTimer < stuckCheckInterval)
+            return;
+
+        float moved = Vector3.Distance(transform.position, _lastProgressPosition);
+        _lastProgressPosition = transform.position;
+        _stuckTimer = 0f;
+
+        if (moved >= stuckDistanceThreshold)
+            return;
+
+        RecoverFromStuck();
+    }
+
+    private void RecoverFromStuck()
+    {
+        _avoidDirection = Vector3.zero;
+        _avoidTimer = 0f;
+
+        if (_routeIndex < _currentRoute.Count - 1)
+        {
+            AdvanceRouteIndex();
+            _waiting = false;
+        }
+        else
+        {
+            PickNewRoute();
+        }
+
+        _lastProgressPosition = transform.position;
+        _stuckTimer = 0f;
+        Debug.Log($"[NPCRouteWander] '{name}' was stuck and switched to a new route target.", this);
+    }
+
+    private Vector3 ResolveMoveDirection(Vector3 desiredDirection)
+    {
+        if (!avoidObstacles || desiredDirection.sqrMagnitude <= Mathf.Epsilon)
+            return desiredDirection;
+
+        if (_avoidTimer > 0f && _avoidDirection.sqrMagnitude > Mathf.Epsilon)
+        {
+            if (!TryGetBlockingHit(_avoidDirection, obstacleCheckDistance * 0.75f, out _))
+                return _avoidDirection;
+
+            _avoidDirection = Vector3.zero;
+            _avoidTimer = 0f;
+        }
+
+        if (!TryGetBlockingHit(desiredDirection, obstacleCheckDistance, out var hit))
+            return desiredDirection;
+
+        _avoidDirection = ComputeAvoidanceDirection(desiredDirection, hit.normal);
+
+        if (TryGetBlockingHit(_avoidDirection, obstacleCheckDistance * 0.85f, out _))
+        {
+            Vector3 left = Quaternion.AngleAxis(-avoidanceTurnAngle, Vector3.up) * desiredDirection;
+            Vector3 right = Quaternion.AngleAxis(avoidanceTurnAngle, Vector3.up) * desiredDirection;
+
+            bool leftBlocked = TryGetBlockingHit(left, obstacleCheckDistance, out _);
+            bool rightBlocked = TryGetBlockingHit(right, obstacleCheckDistance, out _);
+
+            if (!leftBlocked || !rightBlocked)
+                _avoidDirection = (!leftBlocked ? left : right).normalized;
+        }
+
+        _avoidTimer = avoidanceHoldTime;
+        return _avoidDirection;
+    }
+
+    private Vector3 ComputeAvoidanceDirection(Vector3 desiredDirection, Vector3 obstacleNormal)
+    {
+        obstacleNormal.y = 0f;
+        if (obstacleNormal.sqrMagnitude <= Mathf.Epsilon)
+            return Vector3.Cross(Vector3.up, desiredDirection).normalized;
+
+        obstacleNormal.Normalize();
+
+        Vector3 slide = Vector3.ProjectOnPlane(desiredDirection, obstacleNormal);
+        slide.y = 0f;
+        if (slide.sqrMagnitude > Mathf.Epsilon)
+            return slide.normalized;
+
+        Vector3 tangentA = Vector3.Cross(Vector3.up, obstacleNormal).normalized;
+        Vector3 tangentB = -tangentA;
+        return Vector3.Dot(tangentA, desiredDirection) >= Vector3.Dot(tangentB, desiredDirection)
+            ? tangentA
+            : tangentB;
+    }
+
+    private bool TryGetBlockingHit(Vector3 direction, float distance, out RaycastHit blockingHit)
+    {
+        blockingHit = default;
+
+        if (direction.sqrMagnitude <= Mathf.Epsilon || distance <= 0f)
+            return false;
+
+        direction = direction.normalized;
+
+        float probeHeight = ProbeHeight();
+        Vector3 origin = transform.position + Vector3.up * probeHeight;
+        float castRadius = ProbeRadius();
+
+        if (!Physics.SphereCast(origin, castRadius, direction, out RaycastHit hit, distance, obstacleLayers, QueryTriggerInteraction.Ignore))
+            return false;
+
+        if (hit.transform == null || hit.transform.IsChildOf(transform))
+            return false;
+
+        blockingHit = hit;
+        return true;
+    }
+
+    private float ProbeHeight()
+    {
+        if (_controller == null)
+            return 0.9f;
+
+        float halfHeight = Mathf.Max(_controller.height * 0.5f, _controller.radius);
+        return _controller.center.y + halfHeight * 0.5f;
+    }
+
+    private float ProbeSideOffset()
+    {
+        if (_controller == null)
+            return Mathf.Max(0.1f, obstacleSideOffset);
+
+        return Mathf.Max(_controller.radius * 0.8f, obstacleSideOffset);
+    }
+
+    private float ProbeRadius()
+    {
+        if (_controller == null)
+            return Mathf.Max(0.15f, obstacleSideOffset * 0.5f);
+
+        return Mathf.Max(_controller.radius * 0.75f, obstacleSideOffset * 0.5f);
     }
 
     private Vector3 ForwardLookTarget() =>

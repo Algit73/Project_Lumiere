@@ -4,7 +4,6 @@ using UnityEngine;
 namespace Controller
 {
     [RequireComponent(typeof(CharacterController))]
-    [RequireComponent(typeof(Animator))]
     [DisallowMultipleComponent]
     public class CharacterMover : MonoBehaviour
     {
@@ -20,6 +19,11 @@ namespace Controller
         [SerializeField]
         private float m_JumpHeight = 5f;
 
+        [Header("Capsule")]
+        [Tooltip("Enable for humanoid characters whose pivot is at their feet. Disable for animals/non-humanoids whose pivot is at body center.")]
+        [SerializeField]
+        private bool m_AutoCorrectCapsuleCenter = true;
+
         [Header("Animator")]
         [SerializeField]
         private string m_HorizontalID = "Hor";
@@ -29,6 +33,12 @@ namespace Controller
         private string m_StateID = "State";
         [SerializeField]
         private string m_JumpID = "IsJump";
+        [SerializeField]
+        private AnimatorControlMode m_AnimatorControlMode = AnimatorControlMode.Auto;
+        [SerializeField, Range(0f, 1f)]
+        private float m_WalkAnimScale = 0.45f;
+        [SerializeField, Range(0f, 1f)]
+        private float m_RunAnimScale = 1f;
         [SerializeField]
         private LookWeight m_LookWeight = new(1f, 0.3f, 0.7f, 1f);
 
@@ -54,24 +64,299 @@ namespace Controller
         {
             m_WalkSpeed = Mathf.Max(m_WalkSpeed, 0f);
             m_RunSpeed = Mathf.Max(m_RunSpeed, m_WalkSpeed);
+            m_WalkAnimScale = Mathf.Clamp01(m_WalkAnimScale);
+            m_RunAnimScale = Mathf.Clamp01(m_RunAnimScale);
 
             m_Movement?.SetStats(m_WalkSpeed / 3.6f, m_RunSpeed / 3.6f, m_RotateSpeed, m_JumpHeight, m_Space);
+
+            // Clamp stepOffset so Unity's CharacterController constraint is satisfied
+            // even when the parent GameObject is scaled down (e.g. to 0.005 for XR scenes).
+            // OnValidate fires before Play mode starts, so this prevents the log error.
+            var cc = GetComponent<CharacterController>();
+            if (cc != null)
+            {
+                Vector3 s = transform.lossyScale;
+                float scaledHeight = cc.height * s.y;
+                float scaledRadius = cc.radius * Mathf.Max(s.x, s.z);
+                float maxStep = scaledHeight + scaledRadius * 2f;
+                if (cc.stepOffset > maxStep)
+                    cc.stepOffset = Mathf.Max(0f, maxStep * 0.25f);
+            }
         }
 
         private void Awake()
         {
             m_Transform = transform;
             m_Controller = GetComponent<CharacterController>();
-            m_Animator = GetComponent<Animator>();
+            AnimatorControlMode animatorControlMode = ResolveAnimatorControlMode();
+            m_Animator = ResolveAnimator(animatorControlMode);
+            if (m_Animator == null)
+                Debug.LogWarning($"[CharacterMover] No Animator found on '{name}' or any child. " +
+                                 "Add an Animator component to each child mesh piece and assign Pumped_Movement controller.", this);
+            else
+            {
+                NormalizeAnimatorHierarchy(m_Animator, animatorControlMode);
+                Debug.Log($"[CharacterMover] Animator found: '{m_Animator.gameObject.name}'", this);
+            }
+
+            // Root cause fix: if center.y is 0 the capsule is centered at the pivot,
+            // so Unity sits the capsule BOTTOM on the ground and the pivot (character
+            // feet) floats at height/2 above the floor.
+            // Only applies to humanoid characters (pivot at feet). Disable for animals.
+            if (m_AutoCorrectCapsuleCenter && Mathf.Approximately(m_Controller.center.y, 0f))
+            {
+                Vector3 c = m_Controller.center;
+                c.y = m_Controller.height * 0.5f;
+                m_Controller.center = c;
+            }
+
+            // Clamp stepOffset to satisfy Unity's constraint:
+            // stepOffset <= scaledHeight + scaledRadius * 2
+            // (stepOffset is world-space; the error message confirms "scaled" values)
+            {
+                Vector3 s = transform.lossyScale;
+                float scaledHeight = m_Controller.height * s.y;
+                float scaledRadius = m_Controller.radius * Mathf.Max(s.x, s.z);
+                float maxStep = scaledHeight + scaledRadius * 2f;
+                if (m_Controller.stepOffset > maxStep)
+                    m_Controller.stepOffset = maxStep * 0.25f;
+            }
 
             m_Movement = new MovementHandler(m_Controller, m_Transform, m_WalkSpeed, m_RunSpeed, m_RotateSpeed, m_JumpHeight, m_Space);
             m_Animation = new AnimationHandler(m_Animator, m_HorizontalID,  m_VerticalID, m_StateID, m_JumpID);
         }
 
+        private Animator ResolveAnimator(AnimatorControlMode controlMode)
+        {
+            var animators = GetComponentsInChildren<Animator>(true);
+            if (animators == null || animators.Length == 0)
+                return null;
+
+            if (controlMode == AnimatorControlMode.RootAnimator)
+            {
+                Animator rootAnimator = GetComponent<Animator>();
+                if (rootAnimator != null)
+                    return rootAnimator;
+            }
+
+            Animator best = null;
+            int bestScore = int.MinValue;
+
+            foreach (var animator in animators)
+            {
+                int score = ScoreAnimator(animator, controlMode);
+                if (score > bestScore)
+                {
+                    best = animator;
+                    bestScore = score;
+                }
+            }
+
+            return best;
+        }
+
+        private int ScoreAnimator(Animator animator, AnimatorControlMode controlMode)
+        {
+            if (animator == null)
+                return int.MinValue;
+
+            int score = 0;
+            bool isRootAnimator = animator.transform == transform;
+            bool hasDirectSkin = animator.GetComponent<SkinnedMeshRenderer>() != null;
+            bool hasBodyName = animator.gameObject.name.IndexOf("Body", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            if (controlMode == AnimatorControlMode.BodyAnimator && isRootAnimator)
+                score -= 2000;
+
+            if (controlMode == AnimatorControlMode.RootAnimator && isRootAnimator)
+                score += 2000;
+            else if (isRootAnimator)
+                score += 400;
+            else
+                score += 100;
+
+            if (hasBodyName)
+                score += 1000;
+
+            if (hasDirectSkin)
+                score += 500;
+
+            if (animator.enabled)
+                score += 10;
+
+            if (animator.runtimeAnimatorController != null)
+                score += 25;
+
+            if (animator.avatar != null)
+                score += 25;
+
+            var smr = animator.GetComponent<SkinnedMeshRenderer>() ?? animator.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if (smr != null)
+            {
+                score += 100;
+
+                if (smr.rootBone != null)
+                    score += 50;
+            }
+
+            score += animator.GetComponentsInChildren<Transform>(true).Length;
+            return score;
+        }
+
+        private void NormalizeAnimatorHierarchy(Animator selectedAnimator, AnimatorControlMode controlMode)
+        {
+            bool useAnimatorSync = controlMode == AnimatorControlMode.SyncedChildren || GetComponent<MultiAnimatorSync>() != null;
+            Animator sourceAnimator = ResolveAnimationSourceAnimator(selectedAnimator);
+            RuntimeAnimatorController fallbackController = sourceAnimator != null ? sourceAnimator.runtimeAnimatorController : selectedAnimator.runtimeAnimatorController;
+            Avatar fallbackAvatar = sourceAnimator != null ? sourceAnimator.avatar : selectedAnimator.avatar;
+
+            foreach (var animator in GetComponentsInChildren<Animator>(true))
+            {
+                if (fallbackController == null && animator.runtimeAnimatorController != null)
+                    fallbackController = animator.runtimeAnimatorController;
+
+                if (fallbackAvatar == null && animator.avatar != null)
+                    fallbackAvatar = animator.avatar;
+            }
+
+            if (ShouldApplySourceController(selectedAnimator, sourceAnimator) && fallbackController != null)
+                selectedAnimator.runtimeAnimatorController = fallbackController;
+            else if (selectedAnimator.runtimeAnimatorController == null && fallbackController != null)
+                selectedAnimator.runtimeAnimatorController = fallbackController;
+
+            if (ShouldApplySourceAvatar(selectedAnimator, sourceAnimator) && fallbackAvatar != null)
+                selectedAnimator.avatar = fallbackAvatar;
+            else if (selectedAnimator.avatar == null && fallbackAvatar != null)
+                selectedAnimator.avatar = fallbackAvatar;
+
+            foreach (var animator in GetComponentsInChildren<Animator>(true))
+            {
+                if (animator.runtimeAnimatorController == null && fallbackController != null)
+                    animator.runtimeAnimatorController = fallbackController;
+
+                if (animator.avatar == null && fallbackAvatar != null)
+                    animator.avatar = fallbackAvatar;
+
+                animator.applyRootMotion = false;
+
+                if (useAnimatorSync)
+                {
+                    animator.enabled = true;
+                    continue;
+                }
+
+                animator.enabled = animator == selectedAnimator;
+            }
+        }
+
+        private Animator ResolveAnimationSourceAnimator(Animator selectedAnimator)
+        {
+            Animator best = null;
+            int bestScore = int.MinValue;
+
+            foreach (var animator in GetComponentsInChildren<Animator>(true))
+            {
+                int score = 0;
+
+                if (animator == selectedAnimator)
+                    score += 50;
+
+                if (animator.gameObject.name.IndexOf("Body", StringComparison.OrdinalIgnoreCase) >= 0)
+                    score += 1000;
+
+                if (animator.GetComponent<SkinnedMeshRenderer>() != null)
+                    score += 600;
+
+                if (animator.avatar != null)
+                    score += 200;
+
+                if (animator.runtimeAnimatorController != null)
+                    score += 200;
+
+                if (animator.transform == transform)
+                    score -= 500;
+
+                if (score > bestScore)
+                {
+                    best = animator;
+                    bestScore = score;
+                }
+            }
+
+            return best;
+        }
+
+        private AnimatorControlMode ResolveAnimatorControlMode()
+        {
+            if (m_AnimatorControlMode != AnimatorControlMode.Auto)
+            {
+                if (m_AnimatorControlMode == AnimatorControlMode.RootAnimator && RequiresSynchronizedChildAnimators())
+                    return AnimatorControlMode.SyncedChildren;
+
+                return m_AnimatorControlMode;
+            }
+
+            foreach (var child in GetComponentsInChildren<Transform>(true))
+            {
+                string childName = child.name;
+                if (childName.IndexOf("Senior", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return RequiresSynchronizedChildAnimators() ? AnimatorControlMode.SyncedChildren : AnimatorControlMode.BodyAnimator;
+
+                if (childName.IndexOf("Adult", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return AnimatorControlMode.RootAnimator;
+
+                if (childName.IndexOf("Pumped", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return AnimatorControlMode.BodyAnimator;
+
+                if (childName.IndexOf("Teen", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return AnimatorControlMode.BodyAnimator;
+            }
+
+            return AnimatorControlMode.BodyAnimator;
+        }
+
+        private bool RequiresSynchronizedChildAnimators()
+        {
+            int animatedChildCount = 0;
+            foreach (var animator in GetComponentsInChildren<Animator>(true))
+            {
+                if (animator == null || animator.transform == transform)
+                    continue;
+
+                if (animator.GetComponent<SkinnedMeshRenderer>() == null)
+                    continue;
+
+                animatedChildCount++;
+                if (animatedChildCount > 1)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool ShouldApplySourceController(Animator selectedAnimator, Animator sourceAnimator)
+        {
+            return sourceAnimator != null
+                && sourceAnimator != selectedAnimator
+                && selectedAnimator.transform.parent == null
+                && selectedAnimator.GetComponent<SkinnedMeshRenderer>() == null;
+        }
+
+        private static bool ShouldApplySourceAvatar(Animator selectedAnimator, Animator sourceAnimator)
+        {
+            return sourceAnimator != null
+                && sourceAnimator != selectedAnimator
+                && selectedAnimator.transform.parent == null
+                && selectedAnimator.GetComponent<SkinnedMeshRenderer>() == null;
+        }
+
         private void Update()
         {
-            m_Movement.Move(Time.deltaTime, in m_Axis, in m_Target, m_IsRun, m_IsJump, m_IsMoving, out var animAxis, out var isAir);
-            m_Animation.Animate(in animAxis, m_IsRun? 1f : 0f, isAir, Time.deltaTime);
+            m_Movement.Move(Time.deltaTime, in m_Axis, in m_Target, m_IsRun, m_IsJump, m_IsMoving,
+                m_IsRun ? m_RunAnimScale : m_WalkAnimScale,
+                out var animAxis, out var isAir);
+            if (m_Animator != null)
+                m_Animation.Animate(in animAxis, m_IsRun? 1f : 0f, isAir, Time.deltaTime);
 
         }
 
@@ -124,6 +409,14 @@ namespace Controller
             }
         }
 
+        private enum AnimatorControlMode
+        {
+            Auto,
+            RootAnimator,
+            BodyAnimator,
+            SyncedChildren
+        }
+
         #region Handlers
         private class MovementHandler
         {
@@ -137,7 +430,7 @@ namespace Controller
 
             private Space m_Space;
 
-            private readonly float m_Luft = 75f;
+            private readonly float m_Luft = 5f;
             private readonly float m_JumpReload = 1f;
 
             private float m_TargetAngle;
@@ -176,7 +469,8 @@ namespace Controller
                 m_Normal = normal;
             }
 
-            public void Move(float deltaTime, in Vector2 axis, in Vector3 target, bool isRun, bool isJump, bool isMoving, out Vector2 animAxis, out bool isAir)
+            public void Move(float deltaTime, in Vector2 axis, in Vector3 target, bool isRun, bool isJump, bool isMoving,
+                float animScale, out Vector2 animAxis, out bool isAir)
             {
                 var targetForward = Vector3.Normalize(target - m_Transform.position);
 
@@ -186,7 +480,7 @@ namespace Controller
                 Turn(in targetForward, isMoving);
                 UpdateRotation(deltaTime);
 
-                GenAnimationAxis(in movement, out animAxis);
+                GenAnimationAxis(in movement, animScale, out animAxis);
             }
 
             private void ConvertMovement(in Vector2 axis, in Vector3 targetForward, out Vector3 movement)
@@ -248,7 +542,7 @@ namespace Controller
                 return;
             }
 
-            private void GenAnimationAxis(in Vector3 movement, out Vector2 animAxis)
+            private void GenAnimationAxis(in Vector3 movement, float animScale, out Vector2 animAxis)
             {
                 if(m_Space == Space.Self)
                 {
@@ -258,6 +552,8 @@ namespace Controller
                 {
                     animAxis = new Vector2(Vector3.Dot(movement, Vector3.right), Vector3.Dot(movement, Vector3.forward));
                 }
+
+                animAxis *= Mathf.Clamp01(animScale);
             }
 
             private void Turn(in Vector3 targetForward, bool isMoving)
@@ -333,8 +629,8 @@ namespace Controller
                 m_Animator.SetFloat(m_StateID, Mathf.Clamp01(m_FlowState));
                 m_Animator.SetBool(m_JumpID, isJump);
 
-                m_FlowAxis = Vector2.ClampMagnitude(m_FlowAxis + k_InputFlow * deltaTime * (axis - m_FlowAxis).normalized, 1f);
-                m_FlowState = Mathf.Clamp01(m_FlowState + k_InputFlow * deltaTime * Mathf.Sign(state - m_FlowState));
+                m_FlowAxis = Vector2.ClampMagnitude(Vector2.MoveTowards(m_FlowAxis, axis, k_InputFlow * deltaTime), 1f);
+                m_FlowState = Mathf.MoveTowards(m_FlowState, Mathf.Clamp01(state), k_InputFlow * deltaTime);
             }
 
             public void AnimateIK(in Vector3 target, in LookWeight lookWeight)

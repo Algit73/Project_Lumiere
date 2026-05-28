@@ -42,6 +42,11 @@ public class ARDialogueMode : MonoBehaviour
     [Tooltip("Fade overlay color (usually black).")]
     [SerializeField] private Color fadeColor = Color.black;
 
+    [Header("AR Background")]
+    [Tooltip("Disable the AR camera feed immediately on Start so the 3D scene is always shown. " +
+             "Keep OFF in the AR/Home scene. Turn ON only for a pure-3D scene with no AR components.")]
+    [SerializeField] private bool disableARBackground = false;
+
     // ── State ─────────────────────────────────────────────────────────────────
     private bool         _inDialogueMode;
     private Pose         _savedPose;          // camera world pose before entering dialogue mode
@@ -53,6 +58,9 @@ public class ARDialogueMode : MonoBehaviour
     private Behaviour _arCameraBackground;
     private Behaviour _trackedPoseDriver;
 
+    // The camera pose to lock to while in dialogue mode
+    private Pose _lockedPose;
+
     // ── Unity ──────────────────────────────────────────────────────────────────
 
     private void Awake()
@@ -60,6 +68,25 @@ public class ARDialogueMode : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
         BuildFaderCanvas();
+    }
+
+    private void Start()
+    {
+        // If we never want AR background (pure 3D mode), kill it immediately.
+        if (disableARBackground)
+            SetAREnabled(false);
+    }
+
+    /// <summary>
+    /// Runs after all Update() calls (including TrackedPoseDriver).
+    /// While locked, we forcibly re-apply the target pose every frame so
+    /// TrackedPoseDriver cannot drift the camera away.
+    /// </summary>
+    private void LateUpdate()
+    {
+        if (!_inDialogueMode) return;
+        if (Camera.main == null) return;
+        Camera.main.transform.SetPositionAndRotation(_lockedPose.position, _lockedPose.rotation);
     }
 
     // ── Public API ─────────────────────────────────────────────────────────────
@@ -106,15 +133,12 @@ public class ARDialogueMode : MonoBehaviour
         SetAREnabled(false);
         _inDialogueMode = true;
 
-        // 4. Snap camera to near the start of its tween
+        // 4. Lock the target pose — LateUpdate will enforce this every frame
+        _lockedPose = new Pose(targetPos, targetRot);
         cam.SetPositionAndRotation(targetPos, targetRot);
 
         // 5. Fade back in
         yield return StartCoroutine(Fade(1f, 0f, fadeDuration));
-
-        // 6. (optional) Smooth tween from current to target -- already there after snap
-        //    If a slow glide is preferred, swap step 4 for a tween here.
-        //    For now we snap under the fade cover, which looks clean on mobile.
 
         onComplete?.Invoke();
     }
@@ -124,12 +148,15 @@ public class ARDialogueMode : MonoBehaviour
         // 1. Fade to black
         yield return StartCoroutine(Fade(0f, 1f, fadeDuration));
 
-        // 2. Re-enable AR
-        SetAREnabled(true);
-
-        // 3. Snap camera back to saved pose
-        Camera.main.transform.SetPositionAndRotation(_savedPose.position, _savedPose.rotation);
+        // 2. Release the camera lock
         _inDialogueMode = false;
+
+        // 3. Only re-enable AR if we started with it on
+        if (!disableARBackground)
+            SetAREnabled(true);
+
+        // 4. Snap camera back to saved pose
+        Camera.main.transform.SetPositionAndRotation(_savedPose.position, _savedPose.rotation);
 
         // 4. Short grace period for AR to settle before revealing
         yield return new WaitForSeconds(0.1f);

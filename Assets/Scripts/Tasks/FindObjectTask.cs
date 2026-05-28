@@ -38,11 +38,19 @@ public class FindObjectTask : MonoBehaviour
     [SerializeField] private FindObjectDialogueData dialogueData;
 
     [Header("Camera Framing")]
-    [Tooltip("Fraction of screen height the framed region should occupy (0.1–0.9). " +
-             "The rest is reserved for the speech bubble.")]
-    [SerializeField, Range(0.1f, 0.9f)] private float screenFillFraction = 0.60f;
+    // ── Commented out: new bubble-aware framing (caused floating — now superseded) ──
+    // [SerializeField] private float bubbleReservedPx = 280f;
+    // [SerializeField, Range(0f, 0.15f)] private float edgeMarginFrac = 0.05f;
+    // ──────────────────────────────────────────────────────────────────────────
 
-    [Tooltip("Humanoid threshold: bounds.y/bounds.x > this value → focus on upper half.")]
+    [Tooltip("Fraction of screen height the framed region should occupy (0.1\u20130.9).")]
+    [SerializeField, Range(0.1f, 0.9f)] private float screenFillFraction = 0.50f;
+
+    [Tooltip("Fraction of screen height occupied by the speech bubble panel (topMargin + panelHeight / screenHeight). " +
+             "Default 0.26 = 280px on a 1080p screen. Camera aim is raised so the character appears below the panel.")]
+    [SerializeField, Range(0f, 0.5f)] private float bubbleScreenFraction = 0.26f;
+
+    [Tooltip("Humanoid threshold: bounds.y/bounds.x > this value \u2192 focus on upper half.")]
     [SerializeField] private float humanoidRatioThreshold = 1.0f;
 
     [Tooltip("Minimum camera distance from the NPC (safety clamp).")]
@@ -54,6 +62,16 @@ public class FindObjectTask : MonoBehaviour
     [Header("Dialogue Anchor")]
     [Tooltip("How far above the NPC's collider top edge the bubble appears (world units).")]
     [SerializeField] private float bubbleAboveHead = 0.25f;
+
+    [Tooltip("Shifts the camera focus point up (+) or down (-) relative to the mesh bounds centre. " +
+             "Use this to compensate if the character mesh sits low inside its capsule.")]
+    [SerializeField] private float framingVerticalBias = 0f;
+
+    [Header("Speech Bubble")]
+    [Tooltip("Optional prefab created via Tools > Create Speech Bubble Prefab. " +
+             "Assign it here to use your custom-designed bubble. " +
+             "Leave null to use the default code-built bubble.")]
+    [SerializeField] private GameObject speechBubblePrefab;
 
     // ── Private state ──────────────────────────────────────────────────────────
     private CharacterAgent          _chosenAgent;
@@ -72,6 +90,21 @@ public class FindObjectTask : MonoBehaviour
         // so the user doesn't need to wire them separately.
         _arMode = GetComponent<ARDialogueMode>() ?? gameObject.AddComponent<ARDialogueMode>();
         EnsureNavUI();
+    }
+
+    private void Start()
+    {
+        // If we arrived here via SceneTransitionManager carrying a Find task:
+        // TODO: replace SceneReturnOnInput with Begin() when the full task flow is ready.
+        if (SceneTransitionManager.Instance != null &&
+            SceneTransitionManager.Instance.ConsumePendingTask(out TaskType task) &&
+            task == TaskType.Find)
+        {
+            // TESTING: just wait for a tap then return to AR scene.
+            // When ready, replace this line with: Begin();
+            // gameObject.AddComponent<SceneReturnOnInput>();
+            Begin();
+        }
     }
 
     // ── Public API ─────────────────────────────────────────────────────────────
@@ -110,6 +143,12 @@ public class FindObjectTask : MonoBehaviour
         // 4. Compute camera pose from collider bounds
         ComputeCameraPose(_chosenAgent.gameObject,
             out Vector3 camPos, out Quaternion camRot, out Vector3 bubbleAnchorPos);
+
+        // 4b. Rotate NPC to face the camera (Y-axis only)
+        Vector3 towardCam = camPos - _chosenAgent.transform.position;
+        towardCam.y = 0f;
+        if (towardCam.sqrMagnitude > 0.001f)
+            _chosenAgent.transform.rotation = Quaternion.LookRotation(towardCam, Vector3.up);
 
         // 5. Enter AR dialogue mode (fade + snap + fade)
         _arMode.EnterDialogueMode(camPos, camRot, () =>
@@ -172,7 +211,7 @@ public class FindObjectTask : MonoBehaviour
         // Resume NPC
         if (_chosenAgent != null) ResumeNPC(_chosenAgent);
 
-        // Exit AR dialogue mode
+        // Exit AR dialogue mode, then return to the AR/Home scene
         _arMode?.ExitDialogueMode(() =>
         {
             // Clean up bubble instance
@@ -181,6 +220,10 @@ public class FindObjectTask : MonoBehaviour
                 Destroy(_bubble.gameObject);
                 _bubble = null;
             }
+
+            // Return to AR scene (if we came via SceneTransitionManager)
+            if (SceneTransitionManager.Instance != null)
+                SceneTransitionManager.Instance.ReturnHome();
         });
 
         _chosenAgent = null;
@@ -219,12 +262,11 @@ public class FindObjectTask : MonoBehaviour
     ///
     /// Algorithm:
     ///   1. Get Collider.bounds (falls back to Renderer aggregate bounds).
-    ///   2. Compute height/width ratio → humanoid vs animal framing.
-    ///   3. Define framing region (focusMin … focusMax in Y).
-    ///   4. Camera distance = max(distFromHeight, distFromWidth) so the region
-    ///      fits inside the screen with the configured fill fraction.
-    ///   5. Camera placed behind the NPC (opposite its forward), looking at the
-    ///      focus centre.
+    ///   2. Compute available screen area: subtract bubble panel (top) and edge margins.
+    ///   3. Camera distance so the full character fits inside the available area.
+    ///   4. Camera placed on the viewer's side, level with the character centre.
+    ///   5. Aim point raised above the character centre so the character appears in
+    ///      the lower clear zone (below the bubble panel) rather than at screen centre.
     /// </summary>
     private void ComputeCameraPose(
         GameObject npcGO,
@@ -234,8 +276,29 @@ public class FindObjectTask : MonoBehaviour
     {
         Bounds bounds = GetNPCBounds(npcGO);
 
+        // ── Commented out: new bubble-aware framing (caused floating illusion) ──
+        // float frameHeight  = bounds.size.y;
+        // float frameWidth   = Mathf.Max(bounds.size.x, bounds.size.z);
+        // float frameCentreY = bounds.center.y;
+        // Vector3 focusPt    = new Vector3(bounds.center.x, frameCentreY, bounds.center.z);
+        // Camera cam  = Camera.main;
+        // float fovY  = cam != null ? cam.fieldOfView : 60f;
+        // float fovX  = cam != null ? Camera.VerticalToHorizontalFieldOfView(fovY, cam.aspect) : 80f;
+        // float scrH  = Screen.height > 0 ? Screen.height : 1080f;
+        // float topReservedFrac = Mathf.Clamp01(bubbleReservedPx / scrH);
+        // float usableHalfFrac = Mathf.Max(0.5f - topReservedFrac - edgeMarginFrac, 0.05f);
+        // float halfFrameH = frameHeight * 0.5f;
+        // float halfFrameW = frameWidth  * 0.5f;
+        // float distFromH  = halfFrameH / (usableHalfFrac * Mathf.Tan(fovY * 0.5f * Mathf.Deg2Rad));
+        // float distFromW  = halfFrameW / ((0.5f - edgeMarginFrac) * Mathf.Tan(fovX * 0.5f * Mathf.Deg2Rad));
+        // float distance   = Mathf.Clamp(Mathf.Max(distFromH, distFromW), minCameraDistance, maxCameraDistance);
+        // camPos   = focusPt + toCamera * distance;
+        // camPos.y = focusPt.y;
+        // camRot = Quaternion.LookRotation(focusPt - camPos, Vector3.up);
+        // ──────────────────────────────────────────────────────────────────────
+
         float totalHeight = bounds.size.y;
-        float totalWidth  = Mathf.Max(bounds.size.x, bounds.size.z);   // use widest dimension
+        float totalWidth  = Mathf.Max(bounds.size.x, bounds.size.z);
 
         // Humanoid: height/width > threshold → frame upper half (waist → head)
         bool isHumanoid = (totalHeight > 0.01f) && (totalHeight / Mathf.Max(totalWidth, 0.01f) > humanoidRatioThreshold);
@@ -243,38 +306,30 @@ public class FindObjectTask : MonoBehaviour
         float frameYMin, frameYMax;
         if (isHumanoid)
         {
-            // Upper half: waist to top of head
             float midY  = bounds.min.y + totalHeight * 0.5f;
             frameYMin   = midY;
             frameYMax   = bounds.max.y;
         }
         else
         {
-            // Full bounding box
             frameYMin   = bounds.min.y;
             frameYMax   = bounds.max.y;
         }
 
         float frameHeight  = frameYMax - frameYMin;
-        float frameCentreY = (frameYMin + frameYMax) * 0.5f;
+        float frameCentreY = (frameYMin + frameYMax) * 0.5f + framingVerticalBias;
         Vector3 focusPt    = new Vector3(bounds.center.x, frameCentreY, bounds.center.z);
 
-        // Camera FoV
         Camera cam = Camera.main;
         float fovY  = cam != null ? cam.fieldOfView : 60f;
         float fovX  = cam != null ? Camera.VerticalToHorizontalFieldOfView(fovY, cam.aspect) : 80f;
 
-        // Distance required so frame fills `screenFillFraction` of screen height
         float halfFrameH  = frameHeight * 0.5f;
         float halfFrameW  = totalWidth  * 0.5f;
         float distFromH   = halfFrameH  / (screenFillFraction * Mathf.Tan(fovY * 0.5f * Mathf.Deg2Rad));
-        float distFromW   = halfFrameW  / (Mathf.Tan(fovX * 0.5f * Mathf.Deg2Rad) * 0.9f);  // 90 % width fill
+        float distFromW   = halfFrameW  / (Mathf.Tan(fovX * 0.5f * Mathf.Deg2Rad) * 0.9f);
         float distance    = Mathf.Clamp(Mathf.Max(distFromH, distFromW), minCameraDistance, maxCameraDistance);
 
-        // Place camera on the SAME side as the user's current AR viewpoint so we look at
-        // the character's FACE, not their back.  Using the vector from the NPC to the current
-        // Camera.main position avoids relying on Transform.forward (which varies by model import
-        // orientation) and naturally puts the dialogue camera where the user already is.
         Vector3 toCamera = Camera.main != null
             ? Camera.main.transform.position - focusPt
             : npcGO.transform.forward;
@@ -285,7 +340,21 @@ public class FindObjectTask : MonoBehaviour
         camPos   = focusPt + toCamera * distance;
         camPos.y = focusPt.y;
 
-        camRot = Quaternion.LookRotation(focusPt - camPos, Vector3.up);
+        // Tilt the camera upward so the character appears in the lower clear zone
+        // (below the speech bubble panel) rather than at the screen centre.
+        //
+        // With a level camera, focusPt is at screen centre (NDC-y = 0).
+        // We want focusPt to appear at the CENTRE of the area below the bubble:
+        //   targetNDC = -(2 * targetCentreY_fromTop - 1)
+        //   targetCentreY_fromTop = bubbleScreenFraction + (1 - bubbleScreenFraction) / 2
+        // Raising the aim point by aimOffsetY makes focusPt project below centre:
+        //   focusPt NDC-y ≈ -aimOffsetY / (distance * tan(fovY/2))
+        float targetCentreY = bubbleScreenFraction + (1f - bubbleScreenFraction) * 0.5f;
+        float targetNDC     = -(2f * targetCentreY - 1f);   // negative = below centre
+        float aimOffsetY    = -targetNDC * distance * Mathf.Tan(fovY * 0.5f * Mathf.Deg2Rad);
+        Vector3 aimPt       = new Vector3(focusPt.x, focusPt.y + aimOffsetY, focusPt.z);
+
+        camRot = Quaternion.LookRotation(aimPt - camPos, Vector3.up);
 
         // Bubble anchor: just above the top of the collider
         bubblePos = new Vector3(bounds.center.x,
@@ -295,11 +364,10 @@ public class FindObjectTask : MonoBehaviour
 
     private static Bounds GetNPCBounds(GameObject go)
     {
-        // 1. Prefer Collider bounds
-        Collider col = go.GetComponentInChildren<Collider>();
-        if (col != null) return col.bounds;
-
-        // 2. Aggregate Renderer bounds
+        // 1. Prefer Renderer bounds — these match the actual visible mesh.
+        //    CharacterController/Collider bounds represent the physics capsule which
+        //    is often larger or misaligned with the mesh, causing the camera to frame
+        //    empty space above the character's head.
         Renderer[] rends = go.GetComponentsInChildren<Renderer>();
         if (rends.Length > 0)
         {
@@ -308,7 +376,11 @@ public class FindObjectTask : MonoBehaviour
             return b;
         }
 
-        // 3. Fallback: a 1×2×1 box at the NPC's feet
+        // 2. Fall back to Collider bounds if no renderers found
+        Collider col = go.GetComponentInChildren<Collider>();
+        if (col != null) return col.bounds;
+
+        // 3. Last resort: a 1×2×1 box at the NPC's feet
         return new Bounds(go.transform.position + Vector3.up, new Vector3(1f, 2f, 1f));
     }
 
@@ -340,14 +412,34 @@ public class FindObjectTask : MonoBehaviour
     {
         if (_bubble != null) Destroy(_bubble.gameObject);
 
-        GameObject bubbleGO = new GameObject("SpeechBubble_" + agent.characterID);
-        bubbleGO.transform.position = worldPos;
+        // Prefer iconAnchor for UI placement when available because some NPC
+        // colliders include extra geometry and produce overly high bounds.max.y.
+        Vector3 spawnPos = worldPos;
+        if (agent != null && agent.iconAnchor != null)
+            spawnPos = agent.iconAnchor.position + Vector3.up * bubbleAboveHead;
 
-        // Attach to the NPC's iconAnchor (if set) so it moves with the character
-        Transform anchor = agent.iconAnchor != null ? agent.iconAnchor : agent.transform;
-        bubbleGO.transform.SetParent(anchor, true);
+        GameObject bubbleGO;
+        if (speechBubblePrefab != null)
+        {
+            // Instantiate the designer-built prefab at world root
+            bubbleGO = Instantiate(speechBubblePrefab, spawnPos, Quaternion.identity);
+            bubbleGO.name = "SpeechBubble_" + agent.characterID;
+        }
+        else
+        {
+            // Fallback: create a plain GameObject and let SpeechBubbleUI build itself
+            bubbleGO = new GameObject("SpeechBubble_" + agent.characterID);
+            bubbleGO.transform.position = spawnPos;
+        }
 
-        _bubble = bubbleGO.AddComponent<SpeechBubbleUI>();
+        // Keep bubble at world root — do NOT parent to the NPC.
+        // The NPC is paused during dialogue, so no tracking is needed.
+        // Parenting would cause SpeechBubbleUI.Awake() to inherit the NPC's
+        // world scale (which can be >> 1 on imported humanoid models), making
+        // the canvas enormous on screen.
+
+        _bubble = bubbleGO.GetComponent<SpeechBubbleUI>()
+               ?? bubbleGO.AddComponent<SpeechBubbleUI>();
     }
 
     // ── Private — nav UI ──────────────────────────────────────────────────────

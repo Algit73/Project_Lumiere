@@ -19,6 +19,9 @@ public class Lumier_MainController : MonoBehaviour
     [Tooltip("Handles the Find Object dialogue sequence. Auto-adds if missing.")]
     [SerializeField] private FindObjectTask findObjectTask;
 
+    [Tooltip("3D scene to load when a task begins. Must be added to Build Settings.")]
+    [SerializeField] private string dialogueSceneName = "Farm";
+
     [Header("HUD")]
     [SerializeField] public Image hud_selected_objects;
 
@@ -99,7 +102,24 @@ public class Lumier_MainController : MonoBehaviour
                 break;
 
             case TaskType.Find:
-                findObjectTask?.Begin();
+                // Save the AR anchor pose (if an anchor controller exists) and switch to the 3D scene.
+                // FindObjectTask.Start() in the 3D scene will auto-call Begin().
+                Pose anchorPose = default;
+                bool hasAnchor  = false;
+                var anchor = FindFirstObjectByType<ARSceneAnchorController>();
+                if (anchor != null)
+                {
+                    anchorPose = new Pose(anchor.transform.position, anchor.transform.rotation);
+                    hasAnchor  = true;
+                }
+
+                if (SceneTransitionManager.Instance != null)
+                    SceneTransitionManager.Instance.GoTo(
+                        dialogueSceneName, TaskType.Find,
+                        UnityEngine.SceneManagement.SceneManager.GetActiveScene().name,
+                        anchorPose, hasAnchor);
+                else
+                    findObjectTask?.Begin(); // fallback: no transition manager (editor testing)
                 break;
 
             case TaskType.Manipulate:
