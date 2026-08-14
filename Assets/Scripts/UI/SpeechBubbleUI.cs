@@ -50,10 +50,25 @@ public class SpeechBubbleUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _bodyText;
     [SerializeField] private Button          _replayButton;
     [SerializeField] private Slider          _speedSlider;
+    [SerializeField] private Button          _exitButton;
 
-    // ── Internal ──────────────────────────────────────────────────────────────
+    [Header("Hint Button")]
+    [Tooltip("Shown after enough wrong attempts. Uses SinusoidalGlowEffect to catch the player's eye.")]
+    [SerializeField] private Button          _hintButton;
+    private SinusoidalGlowEffect             _hintGlow;
+
+    // ── Events ─────────────────────────────────────────────────────────
+    /// <summary>Fired when the user taps the ✕ exit button. Wire this to cancel/end the task.</summary>
+    public System.Action OnExitClicked;
+
+    /// <summary>Fired when the user taps the glowing hint button.</summary>
+    public System.Action OnHintClicked;
+
+    // ── Internal ───────────────────────────────────────────────────
     private Canvas       _canvas;
     private DialogueLine _currentLine;
+    private AudioSource  _fillerAudioSource;
+    private bool         _skipTtsForCurrentLine;
 
     // ── Unity ──────────────────────────────────────────────────────────────────
 
@@ -90,6 +105,7 @@ public class SpeechBubbleUI : MonoBehaviour
     public void Show(DialogueLine line)
     {
         _currentLine = line;
+        _skipTtsForCurrentLine = false;
         gameObject.SetActive(true);
 
         if (_speakerLabel != null) _speakerLabel.text = line.speakerName;
@@ -98,14 +114,71 @@ public class SpeechBubbleUI : MonoBehaviour
         SpeakCurrentLine();
     }
 
+    /// <summary>
+    /// Shows a hardcoded filler line instantly, playing its pre-recorded <see cref="AudioClip"/>
+    /// instead of going through the (slower) live TTS pipeline. Used to mask OpenAI API latency
+    /// on a wrong tap or hint request.
+    /// </summary>
+    public void ShowFiller(FillerEntry filler)
+    {
+        if (filler == null) return;
+
+        _currentLine = new DialogueLine { speakerName = _speakerLabel != null ? _speakerLabel.text : "", text = filler.text };
+        _skipTtsForCurrentLine = true;
+        gameObject.SetActive(true);
+
+        if (_bodyText != null) _bodyText.text = filler.text;
+
+        if (filler.clip != null)
+        {
+            EnsureFillerAudioSource();
+            _fillerAudioSource.Stop();
+            _fillerAudioSource.clip = filler.clip;
+            _fillerAudioSource.Play();
+        }
+    }
+
+    /// <summary>Shows/hides the glowing hint button. Call after enough wrong attempts.</summary>
+    public void ShowHintButton()
+    {
+        if (_hintButton == null) return;
+        _hintButton.gameObject.SetActive(true);
+        EnsureHintGlow();
+        _hintGlow?.StartGlow();
+    }
+
+    public void HideHintButton()
+    {
+        if (_hintButton == null) return;
+        _hintGlow?.StopGlow();
+        _hintButton.gameObject.SetActive(false);
+    }
+
     public void Hide() => gameObject.SetActive(false);
 
     // ── Private helpers ────────────────────────────────────────────────────────
 
     private void SpeakCurrentLine()
     {
+        if (_skipTtsForCurrentLine) return;
         if (!string.IsNullOrWhiteSpace(_currentLine.text))
             TTSManager.Manager.Speak(_currentLine.text);
+    }
+
+    private void EnsureFillerAudioSource()
+    {
+        if (_fillerAudioSource != null) return;
+        _fillerAudioSource = gameObject.AddComponent<AudioSource>();
+        _fillerAudioSource.playOnAwake = false;
+        _fillerAudioSource.spatialBlend = 0f; // 2D — screen-space bubble, not positional
+    }
+
+    private void EnsureHintGlow()
+    {
+        if (_hintGlow != null || _hintButton == null) return;
+        _hintGlow = _hintButton.GetComponent<SinusoidalGlowEffect>()
+                 ?? _hintButton.gameObject.AddComponent<SinusoidalGlowEffect>();
+        _hintGlow.Initialize(_hintButton);
     }
 
     private void OnReplayClicked() => SpeakCurrentLine();
@@ -123,6 +196,15 @@ public class SpeechBubbleUI : MonoBehaviour
             _speedSlider.maxValue = 2.0f;
             if (_speedSlider.value < 0.5f) _speedSlider.value = 1.0f;
             _speedSlider.onValueChanged.AddListener(OnSpeedChanged);
+        }
+
+        if (_exitButton != null)
+            _exitButton.onClick.AddListener(() => OnExitClicked?.Invoke());
+
+        if (_hintButton != null)
+        {
+            _hintButton.onClick.AddListener(() => OnHintClicked?.Invoke());
+            _hintButton.gameObject.SetActive(false); // hidden until FindObjectTask.ShowHintButton()
         }
     }
 
@@ -153,6 +235,16 @@ public class SpeechBubbleUI : MonoBehaviour
         {
             var t = panel.Find("ControlsRow/SpeedSlider");
             if (t != null) _speedSlider = t.GetComponent<Slider>();
+        }
+        if (_exitButton == null)
+        {
+            var t = panel.Find("ExitButton");
+            if (t != null) _exitButton = t.GetComponent<Button>();
+        }
+        if (_hintButton == null)
+        {
+            var t = panel.Find("HintButton");
+            if (t != null) _hintButton = t.GetComponent<Button>();
         }
     }
 
@@ -211,6 +303,52 @@ public class SpeechBubbleUI : MonoBehaviour
         _bodyText.enableWordWrapping = true;
         _bodyText.text               = "";
 
+        // ── Exit button (top-right corner of panel) ────────────────────────────
+        GameObject exitGO = MakeChild("ExitButton", panelGO.transform);
+        RectTransform exitRT = exitGO.GetComponent<RectTransform>();
+        exitRT.anchorMin        = new Vector2(1f, 1f);
+        exitRT.anchorMax        = new Vector2(1f, 1f);
+        exitRT.pivot            = new Vector2(1f, 1f);
+        exitRT.anchoredPosition = new Vector2(-8f, -8f);
+        exitRT.sizeDelta        = new Vector2(36f, 36f);
+
+        Image exitImg = exitGO.AddComponent<Image>();
+        exitImg.color = new Color(0.6f, 0.15f, 0.15f, 0.90f);
+        _exitButton = exitGO.AddComponent<Button>();
+
+        GameObject exitLblGO = MakeChild("Label", exitGO.transform);
+        RectTransform exitLblRT = exitLblGO.GetComponent<RectTransform>();
+        exitLblRT.anchorMin = Vector2.zero;
+        exitLblRT.anchorMax = Vector2.one;
+        exitLblRT.offsetMin = exitLblRT.offsetMax = Vector2.zero;
+        TextMeshProUGUI exitTMP = exitLblGO.AddComponent<TextMeshProUGUI>();
+        exitTMP.text      = "\u2715";    // ✕
+        exitTMP.fontSize  = 18f;
+        exitTMP.fontStyle = FontStyles.Bold;
+        exitTMP.color     = Color.white;
+        exitTMP.alignment = TextAlignmentOptions.Center;
+        // ── Hint button (top-left corner, gold/eye-catching, hidden until unlocked) ───
+        GameObject hintGO = MakeChild("HintButton", panelGO.transform);
+        RectTransform hintRT = hintGO.GetComponent<RectTransform>();
+        hintRT.anchorMin        = new Vector2(0f, 1f);
+        hintRT.anchorMax        = new Vector2(0f, 1f);
+        hintRT.pivot            = new Vector2(0f, 1f);
+        hintRT.anchoredPosition = new Vector2(8f, -8f);
+        hintRT.sizeDelta        = new Vector2(36f, 36f);
+
+        Image hintImg = hintGO.AddComponent<Image>();
+        hintImg.color = new Color(0.95f, 0.75f, 0.15f, 0.95f);
+        _hintButton = hintGO.AddComponent<Button>();
+
+        GameObject hintLblGO = MakeChild("Label", hintGO.transform);
+        RectTransform hintLblRT = hintLblGO.GetComponent<RectTransform>();
+        hintLblRT.anchorMin = Vector2.zero;
+        hintLblRT.anchorMax = Vector2.one;
+        hintLblRT.offsetMin = hintLblRT.offsetMax = Vector2.zero;
+        TextMeshProUGUI hintTMP = hintLblGO.AddComponent<TextMeshProUGUI>();
+        hintTMP.text      = "\uD83D\uDCA1";  // 💡
+        hintTMP.fontSize  = 18f;
+        hintTMP.alignment = TextAlignmentOptions.Center;
         // ── Controls row ───────────────────────────────────────────────────────
         GameObject rowGO = MakeChild("ControlsRow", panelGO.transform);
         RectTransform rowRT = rowGO.GetComponent<RectTransform>();

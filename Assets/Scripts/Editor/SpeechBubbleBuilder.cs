@@ -162,12 +162,36 @@ public static class SpeechBubbleBuilder
         spdTMP.color     = LabelGrey;
         spdTMP.alignment = TextAlignmentOptions.MidlineLeft;
 
+        // ── Exit button (top-right corner of panel) ────────────────────────────
+        GameObject exitGO = Rect("ExitButton", panelGO.transform);
+        RectTransform exitRT = exitGO.GetComponent<RectTransform>();
+        exitRT.anchorMin        = new Vector2(1f, 1f);
+        exitRT.anchorMax        = new Vector2(1f, 1f);
+        exitRT.pivot            = new Vector2(1f, 1f);
+        exitRT.anchoredPosition = new Vector2(-8f, -8f);
+        exitRT.sizeDelta        = new Vector2(36f, 36f);
+        exitGO.AddComponent<Image>().color = new Color(0.6f, 0.15f, 0.15f, 0.90f);
+        Button exitBtn = exitGO.AddComponent<Button>();
+
+        GameObject exitLblGO = Rect("Label", exitGO.transform);
+        RectTransform exitLblRT = exitLblGO.GetComponent<RectTransform>();
+        exitLblRT.anchorMin = Vector2.zero;
+        exitLblRT.anchorMax = Vector2.one;
+        exitLblRT.offsetMin = exitLblRT.offsetMax = Vector2.zero;
+        TextMeshProUGUI exitTMP = exitLblGO.AddComponent<TextMeshProUGUI>();
+        exitTMP.text      = "\u2715";
+        exitTMP.fontSize  = 18f;
+        exitTMP.fontStyle = FontStyles.Bold;
+        exitTMP.color     = Color.white;
+        exitTMP.alignment = TextAlignmentOptions.Center;
+
         // ── Wire serialized refs on SpeechBubbleUI ─────────────────────────────
         SerializedObject so = new SerializedObject(bubbleUI);
         so.FindProperty("_speakerLabel").objectReferenceValue = speakerTMP;
         so.FindProperty("_bodyText").objectReferenceValue     = bodyTMP;
         so.FindProperty("_replayButton").objectReferenceValue = replayBtn;
         so.FindProperty("_speedSlider").objectReferenceValue  = slider;
+        so.FindProperty("_exitButton").objectReferenceValue   = exitBtn;
         so.ApplyModifiedPropertiesWithoutUndo();
 
         Selection.activeGameObject = root;

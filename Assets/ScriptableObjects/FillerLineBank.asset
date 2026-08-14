@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef611fc28e4f60e46964eab7be96f5cb, type: 3}
+  m_Name: FillerLineBank
+  m_EditorClassIdentifier: 
+  wrongGuessFillers:
+  - text: Hmm, let's see...
+    clip: {fileID: 8300000, guid: 5166f4a709b583d458e8baa3d52e22bb, type: 3}
+  - text: Oh, not quite that one.
+    clip: {fileID: 8300000, guid: cccbc7a849bf2cb45a1c67486c51aef7, type: 3}
+  - text: Let me think for a second...
+    clip: {fileID: 8300000, guid: b09f21ce404a6b240a5ceef06640d475, type: 3}
+  - text: Close, but not this time.
+    clip: {fileID: 8300000, guid: 5144d7e080ad1a742b6cd4d711d8885a, type: 3}
+  - text: That's a good guess, let me check.
+    clip: {fileID: 8300000, guid: d50a2e3692441af4592150de0bb992ff, type: 3}
+  - text: "Ooh, almost \u2014 hold on."
+    clip: {fileID: 8300000, guid: 2300871186b1fb0448223bda25ff473f, type: 3}
+  - text: Let's take another look.
+    clip: {fileID: 8300000, guid: 9f43baca581120045a2c475749098e69, type: 3}
+  - text: Not this one, but good try!
+    clip: {fileID: 8300000, guid: 16d4e5537d28c6d47add938a3ad82e70, type: 3}
+  - text: Give me just a moment...
+    clip: {fileID: 8300000, guid: 79a10b688ff50f243bae3c75cd8fe2e7, type: 3}
+  - text: Hmm, let me picture it again.
+    clip: {fileID: 8300000, guid: 189555e3807b7ae488be70e390145087, type: 3}
+  - text: That's okay, let's keep looking.
+    clip: {fileID: 8300000, guid: 2ec3c44b5930abb47b5dd01a28b3cc85, type: 3}
+  - text: One moment, let me think it through.
+    clip: {fileID: 8300000, guid: 120d111dd4580044d9225a72be6e2fbf, type: 3}
+  - text: "Good try \u2014 let's see what else."
+    clip: {fileID: 8300000, guid: 19d26482c3487bd49a234ae99de104ae, type: 3}
+  - text: Let's have another look around.
+    clip: {fileID: 8300000, guid: 929f2a252deac49409c76d6db6dd5ebc, type: 3}
+  - text: "Almost \u2014 just a little more thinking."
+    clip: {fileID: 8300000, guid: 9c985bb542ab88740aef98edd6414382, type: 3}
+  - text: That's alright, we'll find it together.
+    clip: {fileID: 8300000, guid: 41b5fbeda28533047b4e0ab89754dcb0, type: 3}
+  hintRequestFillers:
+  - text: Sure, let me help a bit more.
+    clip: {fileID: 8300000, guid: 5ff000bd82315ea48b3922d389270043, type: 3}
+  - text: No problem, here's a little help.
+    clip: {fileID: 8300000, guid: ada4d720760f9e34e879e636dfefa629, type: 3}
+  - text: Let's break it down together.
+    clip: {fileID: 8300000, guid: d8ef5a14dda4f3443b231d84872da1c1, type: 3}
+  - text: "Of course \u2014 let me give you a clue."
+    clip: {fileID: 8300000, guid: 73753ffca912b144584b81a00c727108, type: 3}
+  - text: Here, this might help.
+    clip: {fileID: 8300000, guid: 7dcdf0a4d77a6734bb4dd3243886d73c, type: 3}
+  - text: Let's think about it together.
+    clip: {fileID: 8300000, guid: dd6551c88cdf4e04298c4867a97ea97b, type: 3}
+  - text: Okay, let me point you closer.
+    clip: {fileID: 8300000, guid: ad68100a73693cc4c8e1a0b00306faaa, type: 3}
+  - text: Sure thing, one more clue coming up.
+    clip: {fileID: 8300000, guid: 5473491b6ce72f84db652a794b7fb76a, type: 3}
+  - text: Let's narrow it down a little.
+    clip: {fileID: 8300000, guid: fdb6824a1a604224e8569765986ec868, type: 3}
+  - text: Here's something that might help you.
+    clip: {fileID: 8300000, guid: 686c1ed3d9a094a45a39bf104203e153, type: 3}

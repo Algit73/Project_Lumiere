@@ -19,6 +19,10 @@ public class Lumier_MainController : MonoBehaviour
     [Tooltip("Handles the Find Object dialogue sequence. Auto-adds if missing.")]
     [SerializeField] private FindObjectTask findObjectTask;
 
+    [Tooltip("Character registry asset (Assets › Create › Lumiere › Character Registry). "
+           + "Used to pre-warm the Find-Object session at startup.")]
+    [SerializeField] private CharacterProfileSO findGameRegistry;
+
     [Tooltip("3D scene to load when a task begins. Must be added to Build Settings.")]
     [SerializeField] private string dialogueSceneName = "Farm";
 
@@ -62,6 +66,9 @@ public class Lumier_MainController : MonoBehaviour
         }
 
         hide_hud();
+
+        // Pre-warm the Find-Object session so item + API clue are ready before the user taps.
+        FindObjectPrewarm.Execute(findGameRegistry);
 
         // Glow effect on the main button
         lumiere_glow_effect_init(lumiere_button);

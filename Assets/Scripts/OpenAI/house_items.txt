@@ -1,0 +1,23 @@
+Kitchen table -- Kitchen bar
+    - in the following, you will be given by what each node in the previous graph contains
+     I- Fridge: the fridge has 4 sections. From the top to the bottom (Freezer is the topest), the following is how items are placed inside. each level has two rows. the sign ""_"" means the place is empty:
+         a- Freezer:
+             row 1: 1-_ 2-Chicken 3-_ 4-Meatribs 5-Fish 6-Whole_Ham
+             row 2: 1-Icecream 2-Orange_Popsicle 3-Chocolate_Popsicle 4-Strawberry_Sundae 5-Meat_Sausage 6- Raw_Steak
+         b- Level-1: 
+             row 1: 1-_ 2-Cabbage 3-_ 4-_ 5-Watermelon 6-_ 7-Pumpkin 8-_ 9-Corn 10-Eggplant 11-Carrot
+             row 2: 1-Pineapple 2-Onion 3-Pepper 4-Orange 5-Mushroom 6-Tomato 7-Paprika 8-Strawberry 9-Pear 10-Cherries 11-Broccoli
+         c- Level-2:
+             row 1: 1-_ 2-_ 3-Salad 4-Meat_Sandwich 6-Pizza
+             row 2: 1-Chinese_Food 2-Sushi_Salmon 3-Sushi_Egg 4-Meatball&Puree_Plate 5-Hotdog 6-Hotdog
+         d- Level-3:
+             row 1: 1-Coke_Can 2-Soda_Cup 3-Soda_Bottle 4-Red_Wine_Bottle 5-White_Wine_Bottle
+     II- Stove top and counter top: stove top and counter top are conntected together and two rows of items are on them as following:
+          row 1: 1-_ 2-_ 3-_ 4-Empty_Pot 5-Stew_Pot 6-Oil_Bottle 7-Kitchen_Microwave 8-Coffee_Machine
+          row 2: 1-Cooking_Knife 2-Cooking_Fork 3-Knife_Block 4-Frying_Pan 5-_ 6-Knife_Block 7-_ 8-Toaster
+     III- Kitchen bar: it has two rows:
+          row 1: 1-_ 2-Milk_Carton 3-_ 4-Chocolate_Milk_Carton 5-Banana 6-_ 7-Chocolate_IceCream_Scoop 8_Lemonad_Soda_Cup 9-_ 10-_ 11-Pizza 12-Mustard_Bottle
+          row 2: 1-Kitchen_Blender 2-Apple 3-Strawberry 4-Cherries 5-Chocolate_Tablet 6-Vanilla_IceCream_Scoop 7-Whipped_Cream_Bar 8-Double_Cheese_Burger 9-Cheese_burger 10-Pizza_Cutter 11-Pizza 12-Ketchup_Bottle 13-Salad 14-Pepper_Shaker 15-Salt_Shaker    
+     IV- Kitchen table: the table has 2 rows:
+          row 1: 1-Croissant 2-Tea_Mug 3-Broth_Bowl 4-Chopsticks 5-Cake 6-Cake_Slicer 7-Soup_Bowl 8-Spoon 9-Knife 10-Fork 11-Paprika_Slice  12-Avocado_Half 13-Tomato_Slices 14-Bacons 15-Donut_Strawberry_Sprinkles 16-Donut_Simple 17-Donut_Chocolate 18-Coffee_Cup
+          row 2: 1-_ 2-_ 3-_ 4-Soy 5-Cocktail 6-Pepper_Mill 7-Salt_Mill 8-Candybar 9-Candybar 10-Candybar 11-Bread_Loaf 12-Bread_Loaf 13-Cheese_Slices 14-Half_Pepperoni_Log 15-Tablet_Chocolate 16-Tablet_Chocolate 17-Tablet_Chocolate 18-Cupcake  

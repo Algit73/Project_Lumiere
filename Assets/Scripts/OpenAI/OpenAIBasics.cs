@@ -144,6 +144,31 @@ public class OpenAIBasics //: MonoBehaviour
         return message_content.ToString();
     }
 
+    /// <summary>
+    /// Sends a full multi-turn conversation (system + prior assistant/user turns) to the model
+    /// and returns the assistant's reply text. Used for the Find-Object flow where the story,
+    /// wrong-guess reactions, and hint requests must all stay aware of prior context instead of
+    /// each being a stateless one-shot prompt.
+    /// </summary>
+    public async Task<string> ContinueChatAsync(List<Message> messages)
+    {
+        Debug.Assert(api.ChatEndpoint != null);
+        Debug.Assert(messages != null && messages.Count > 0);
+
+        var chatRequest = new ChatRequest(messages, GPT_5_MINI, temperature: 0.7);
+        var response = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
+
+        Debug.Assert(response != null);
+        Debug.Assert(response.Choices != null);
+        Debug.Assert(response.Choices.Count > 0);
+
+        var choice = response.Choices[0];
+        Debug.Log($"[{choice.Index}] {choice.Message.Role}: {choice} | Finish Reason: {choice.FinishReason}");
+
+        response.GetUsage();
+        return choice.Message.Content.ToString();
+    }
+
     async void chat_classic()
     {
         Debug.Assert(api.ChatEndpoint != null);

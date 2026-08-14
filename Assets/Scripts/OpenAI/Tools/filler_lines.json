@@ -1,0 +1,32 @@
+{
+    "wrong": [
+        "Hmm, let's see...",
+        "Oh, not quite that one.",
+        "Let me think for a second...",
+        "Close, but not this time.",
+        "That's a good guess, let me check.",
+        "Ooh, almost — hold on.",
+        "Let's take another look.",
+        "Not this one, but good try!",
+        "Give me just a moment...",
+        "Hmm, let me picture it again.",
+        "That's okay, let's keep looking.",
+        "One moment, let me think it through.",
+        "Good try — let's see what else.",
+        "Let's have another look around.",
+        "Almost — just a little more thinking.",
+        "That's alright, we'll find it together."
+    ],
+    "hint": [
+        "Sure, let me help a bit more.",
+        "No problem, here's a little help.",
+        "Let's break it down together.",
+        "Of course — let me give you a clue.",
+        "Here, this might help.",
+        "Let's think about it together.",
+        "Okay, let me point you closer.",
+        "Sure thing, one more clue coming up.",
+        "Let's narrow it down a little.",
+        "Here's something that might help you."
+    ]
+}

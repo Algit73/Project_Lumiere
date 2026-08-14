@@ -60,9 +60,19 @@ public class ARSceneAnchorController : MonoBehaviour
         // Give AR tracking a moment to settle before repositioning
         yield return new WaitForSeconds(trackingSettleDelay);
 
+        // Restore AR content anchor pose
         Pose saved = SceneTransitionManager.Instance.SavedAnchorPose;
         transform.SetPositionAndRotation(saved.position, saved.rotation);
-
         Debug.Log("[ARSceneAnchorController] Anchor pose restored from previous session.");
+
+        // Restore camera pose.
+        // In a full AR scene the TrackedPoseDriver will override this immediately,
+        // but it ensures the correct first frame and fully works in non-AR / editor mode.
+        if (SceneTransitionManager.Instance.HasSavedCamera && Camera.main != null)
+        {
+            Pose cam = SceneTransitionManager.Instance.SavedCameraPose;
+            Camera.main.transform.SetPositionAndRotation(cam.position, cam.rotation);
+            Debug.Log("[ARSceneAnchorController] Camera pose restored.");
+        }
     }
 }

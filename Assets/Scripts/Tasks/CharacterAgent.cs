@@ -27,13 +27,17 @@ public class CharacterAgent : MonoBehaviour
              "Create an empty child GameObject at head height and assign it here.")]
     public Transform iconAnchor;
 
-    [Tooltip("Prefab for the task icon (assigned later when UI is ready). " +
-             "Leave null to skip icon spawning.")]
+    [Tooltip("(Legacy) Prefab instantiated directly when no NPCFloatingIcon component is present. " +
+             "Prefer adding an NPCFloatingIcon component instead.")]
     public GameObject iconPrefab;
+
+    [Header("Preview")]
+    [Tooltip("Call ShowIcon on Start. Useful for testing in Edit/Play mode.")]
+    public bool showIconOnStart = false;
 
     // ── Runtime ───────────────────────────────────────────────────────────────
 
-    /// <summary>The live icon instance above this character, if any.</summary>
+    /// <summary>The live icon instance above this character, if any (legacy path).</summary>
     public GameObject ActiveIcon { get; private set; }
 
     /// <summary>The task currently assigned to this character.</summary>
@@ -41,14 +45,38 @@ public class CharacterAgent : MonoBehaviour
         ? TaskManager.Instance.GetTask(gameObject)
         : null;
 
+    // Cached reference — null when the component is not present (silently skipped)
+    private NPCFloatingIcon _floatingIcon;
+
     // ── Icon API ──────────────────────────────────────────────────────────────
 
+    // Awake runs on ALL objects before any Start() fires, so _floatingIcon is
+    // always ready by the time LumiereSceneDirector.Start() calls ShowIcon().
+    private void Awake()
+    {
+        _floatingIcon = GetComponent<NPCFloatingIcon>();
+    }
+
+    private void Start()
+    {
+        if (showIconOnStart)
+            ShowIcon(TaskType.Find);
+    }
+
     /// <summary>
-    /// Spawns the task icon above this character.
-    /// Called by TaskRandomizer after a task is assigned.
+    /// Shows the floating icon for the given task type.
+    /// Uses NPCFloatingIcon if the component exists; falls back to iconPrefab otherwise.
     /// </summary>
     public void ShowIcon(TaskType taskType)
     {
+        // Primary path: delegate to NPCFloatingIcon component
+        if (_floatingIcon != null)
+        {
+            _floatingIcon.ShowIcon();
+            return;
+        }
+
+        // Legacy fallback: spawn iconPrefab directly
         if (iconPrefab == null) return;
 
         Transform anchor = iconAnchor != null ? iconAnchor : transform;
@@ -57,14 +85,15 @@ public class CharacterAgent : MonoBehaviour
             Destroy(ActiveIcon);
 
         ActiveIcon = Instantiate(iconPrefab, anchor.position, Quaternion.identity, anchor);
-
-        // TODO: set the glyph on the icon based on taskType once UI is ready
-        Debug.Log($"[CharacterAgent] Icon shown for '{characterID}' — task type: {taskType}");
+        Debug.Log($"[CharacterAgent] Icon shown for '{characterID}' (legacy prefab path) — task: {taskType}");
     }
 
-    /// <summary>Removes the task icon from above this character.</summary>
+    /// <summary>Hides the floating icon above this character.</summary>
     public void HideIcon()
     {
+        _floatingIcon?.HideIcon();
+
+        // Legacy path cleanup
         if (ActiveIcon != null)
         {
             Destroy(ActiveIcon);

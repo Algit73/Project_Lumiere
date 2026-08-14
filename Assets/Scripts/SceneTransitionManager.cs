@@ -38,6 +38,15 @@ public class SceneTransitionManager : MonoBehaviour
     /// <summary>True if an anchor pose has been saved this session.</summary>
     public bool HasSavedAnchor { get; private set; }
 
+    /// <summary>
+    /// Camera world pose at the moment <see cref="GoTo"/> was called.
+    /// Restored by <see cref="ARSceneAnchorController"/> when the home scene reloads.
+    /// </summary>
+    public Pose SavedCameraPose { get; private set; }
+
+    /// <summary>True if a camera pose has been captured this session.</summary>
+    public bool HasSavedCamera { get; private set; }
+
     // Pending task — consumed once by the destination scene
     private bool     _hasPendingTask;
     private TaskType _pendingTask;
@@ -76,6 +85,14 @@ public class SceneTransitionManager : MonoBehaviour
         {
             SavedAnchorPose = anchorPose;
             HasSavedAnchor  = true;
+        }
+
+        // Auto-capture the current camera pose so it can be restored on return.
+        if (Camera.main != null)
+        {
+            SavedCameraPose = new Pose(Camera.main.transform.position,
+                                       Camera.main.transform.rotation);
+            HasSavedCamera  = true;
         }
 
         SceneManager.LoadScene(targetScene);
